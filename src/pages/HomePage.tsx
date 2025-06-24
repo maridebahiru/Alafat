@@ -2,6 +2,7 @@
 import Layout from '../components/Layout';
 import AdCarousel from '../components/AdCarousel';
 import FeaturedSongs from '../components/FeaturedSongs';
+import FeaturedProducts from '../components/FeaturedProducts';
 import CountdownTimer from '../components/CountdownTimer';
 
 const HomePage = () => {
@@ -35,6 +36,11 @@ const HomePage = () => {
         {/* Featured Songs */}
         <section>
           <FeaturedSongs />
+        </section>
+
+        {/* Featured Products */}
+        <section>
+          <FeaturedProducts />
         </section>
 
         {/* Countdown Timer */}
