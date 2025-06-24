@@ -1,63 +1,26 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import SongCard from '../components/SongCard';
+import { getSongs, Song } from '../services/firebaseService';
 
 const SongsPage = () => {
-  const [playingSong, setPlayingSong] = useState<number | null>(null);
+  const [playingSong, setPlayingSong] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [loading, setLoading] = useState(true);
   const songsPerPage = 6;
 
-  const songs = [
-    {
-      id: 1,
-      title: 'Hallelujah Praise',
-      artist: 'Ethiopian Orthodox Choir',
-      cover: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b/400x400',
-      duration: '4:23',
-      lyrics: `Hallelujah, praise the Lord\nSing with joy and gladness\nOur hearts are filled with love\nFor His eternal goodness\n\nChorus:\nHallelujah, Hallelujah\nPraise His holy name\nHallelujah, Hallelujah\nForever He shall reign`
-    },
-    {
-      id: 2,
-      title: 'Holy Trinity',
-      artist: 'Deacon Michael',
-      cover: 'https://images.unsplash.com/photo-1518770660439-4636190af475/400x400',
-      duration: '3:45',
-      lyrics: `In the name of the Father\nAnd of the Son\nAnd of the Holy Spirit\nThree in One\n\nChorus:\nHoly Trinity, we worship Thee\nOne God in three persons\nHoly Trinity, we praise Thee\nFor Your love that never lessens`
-    },
-    {
-      id: 3,
-      title: 'Morning Prayer',
-      artist: 'St. Mary Choir',
-      cover: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d/400x400',
-      duration: '5:12',
-      lyrics: `As the morning light appears\nWe lift our hearts in prayer\nThank You Lord for this new day\nFor Your love and care\n\nChorus:\nIn the morning, we praise You\nIn the evening, we thank You\nEvery moment of our lives\nWe belong to You`
-    },
-    {
-      id: 4,
-      title: 'Blessed Virgin Mary',
-      artist: 'St. Gabriel Choir',
-      cover: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1/400x400',
-      duration: '4:56',
-      lyrics: `Hail Mary, full of grace\nMother of our Savior\nIntercede for us today\nWith your loving favor\n\nChorus:\nBlessed Virgin Mary\nPray for us sinners\nBlessed Virgin Mary\nOur hearts are winners`
-    },
-    {
-      id: 5,
-      title: 'Ethiopian Hymn',
-      artist: 'Traditional',
-      cover: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81/400x400',
-      duration: '6:18',
-      lyrics: `From the mountains of Ethiopia\nTo the valleys below\nWe sing praises to our God\nWhose love will always flow\n\nChorus:\nEthiopia stretches out her hands\nTo God in prayer and praise\nEthiopia lifts her voice\nThroughout all of her days`
-    },
-    {
-      id: 6,
-      title: 'Angels Singing',
-      artist: 'Heavenly Voices',
-      cover: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f/400x400',
-      duration: '3:33',
-      lyrics: `Angels singing all around\nHoly, holy is the sound\nGlory to God in the highest\nPeace on earth to all\n\nChorus:\nJoin the angels in their song\nPraise the Lord the whole day long\nJoin the angels in their praise\nAll throughout our earthly days`
-    }
-  ];
+  useEffect(() => {
+    const fetchSongs = async () => {
+      setLoading(true);
+      const fetchedSongs = await getSongs();
+      setSongs(fetchedSongs);
+      setLoading(false);
+    };
+
+    fetchSongs();
+  }, []);
 
   const totalPages = Math.ceil(songs.length / songsPerPage);
   const currentSongs = songs.slice(
@@ -65,13 +28,25 @@ const SongsPage = () => {
     currentPage * songsPerPage
   );
 
-  const handleTogglePlay = (songId: number) => {
+  const handleTogglePlay = (songId: string) => {
     if (playingSong === songId) {
       setPlayingSong(null);
     } else {
       setPlayingSong(songId);
     }
   };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-6">
+          <div className="text-center">
+            <p className="text-gray-600">Loading songs...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

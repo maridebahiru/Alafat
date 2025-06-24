@@ -1,13 +1,6 @@
 
 import { ShoppingCart } from 'lucide-react';
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-}
+import { Product } from '../services/firebaseService';
 
 interface ProductCardProps {
   product: Product;

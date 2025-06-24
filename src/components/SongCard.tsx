@@ -1,18 +1,12 @@
 
 import { useState } from 'react';
 import { Play, Pause } from 'lucide-react';
+import { Song } from '../services/firebaseService';
 
 interface SongCardProps {
-  song: {
-    id: number;
-    title: string;
-    artist: string;
-    cover: string;
-    duration: string;
-    lyrics: string;
-  };
+  song: Song;
   isPlaying: boolean;
-  onTogglePlay: (songId: number) => void;
+  onTogglePlay: (songId: string) => void;
 }
 
 const SongCard = ({ song, isPlaying, onTogglePlay }: SongCardProps) => {

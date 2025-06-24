@@ -1,16 +1,9 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import ProductCard from '../components/ProductCard';
 import { ShoppingCart, Filter } from 'lucide-react';
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-}
+import { getProducts, Product } from '../services/firebaseService';
 
 interface CartItem extends Product {
   quantity: number;
@@ -20,66 +13,20 @@ const ShopPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const productsPerPage = 6;
 
-  const products: Product[] = [
-    {
-      id: 1,
-      name: 'Orthodox Cross Pendant',
-      price: 45.99,
-      image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b/400x400',
-      category: 'Jewelry'
-    },
-    {
-      id: 2,
-      name: 'Prayer Book - Amharic',
-      price: 29.99,
-      image: 'https://images.unsplash.com/photo-1518770660439-4636190af475/400x400',
-      category: 'Books'
-    },
-    {
-      id: 3,
-      name: 'Ethiopian Orthodox Icon',
-      price: 89.99,
-      image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d/400x400',
-      category: 'Art'
-    },
-    {
-      id: 4,
-      name: 'Incense Burner',
-      price: 65.00,
-      image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1/400x400',
-      category: 'Accessories'
-    },
-    {
-      id: 5,
-      name: 'Traditional White Dress',
-      price: 129.99,
-      image: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81/400x400',
-      category: 'Clothing'
-    },
-    {
-      id: 6,
-      name: 'Holy Bible - Amharic',
-      price: 55.00,
-      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f/400x400',
-      category: 'Books'
-    },
-    {
-      id: 7,
-      name: 'Monastery Calendar',
-      price: 19.99,
-      image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085/400x400',
-      category: 'Books'
-    },
-    {
-      id: 8,
-      name: 'Prayer Beads',
-      price: 35.00,
-      image: 'https://images.unsplash.com/photo-1483058712412-4245e9b90334/400x400',
-      category: 'Accessories'
-    }
-  ];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      const fetchedProducts = await getProducts();
+      setProducts(fetchedProducts);
+      setLoading(false);
+    };
+
+    fetchProducts();
+  }, []);
 
   const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
 
@@ -111,6 +58,18 @@ const ShopPage = () => {
   const getTotalItems = () => {
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-6">
+          <div className="text-center">
+            <p className="text-gray-600">Loading products...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
