@@ -25,7 +25,7 @@ const SongCard = ({ song, isPlaying, onTogglePlay }: SongCardProps) => {
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all">
         <div className="relative">
           <img
-            src={song.cover || `https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=300&fit=crop`}
+            src={song.imageUrl || `https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=300&fit=crop`}
             alt={song.title}
             className="w-full h-48 object-cover"
             onError={(e) => {

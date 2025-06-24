@@ -7,6 +7,7 @@ export interface Song {
   title: string;
   artist: string;
   cover: string;
+  imageUrl: string;
   duration: string;
   lyrics: string;
   audioUrl?: string;

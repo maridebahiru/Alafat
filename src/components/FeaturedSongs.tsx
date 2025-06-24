@@ -55,7 +55,7 @@ const FeaturedSongs = () => {
                 <div className="flex items-center space-x-4 p-4">
                   <div className="relative">
                     <img
-                      src={song.cover || `https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=100&h=100&fit=crop`}
+                      src={song.imageUrl || `https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=100&h=100&fit=crop`}
                       alt={song.title}
                       className="w-16 h-16 rounded-lg object-cover"
                       onError={(e) => {
