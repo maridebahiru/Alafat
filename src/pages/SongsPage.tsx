@@ -1,14 +1,14 @@
-
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import SongCard from '../components/SongCard';
 import { getSongs, Song } from '../services/firebaseService';
+import { useAudioPlayer } from '../hooks/useAudioPlayer';
 
 const SongsPage = () => {
-  const [playingSong, setPlayingSong] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
+  const { isPlaying, currentSong, playAudio } = useAudioPlayer();
   const songsPerPage = 6;
 
   useEffect(() => {
@@ -28,12 +28,8 @@ const SongsPage = () => {
     currentPage * songsPerPage
   );
 
-  const handleTogglePlay = (songId: string) => {
-    if (playingSong === songId) {
-      setPlayingSong(null);
-    } else {
-      setPlayingSong(songId);
-    }
+  const handleTogglePlay = (songId: string, audioUrl?: string) => {
+    playAudio(songId, audioUrl);
   };
 
   if (loading) {
@@ -61,7 +57,7 @@ const SongsPage = () => {
             <SongCard
               key={song.id}
               song={song}
-              isPlaying={playingSong === song.id}
+              isPlaying={isPlaying && currentSong === song.id}
               onTogglePlay={handleTogglePlay}
             />
           ))}

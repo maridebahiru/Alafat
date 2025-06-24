@@ -1,9 +1,9 @@
-
 import Layout from '../components/Layout';
 import AdCarousel from '../components/AdCarousel';
 import FeaturedSongs from '../components/FeaturedSongs';
 import FeaturedProducts from '../components/FeaturedProducts';
 import CountdownTimer from '../components/CountdownTimer';
+import ContactUs from '../components/ContactUs';
 
 const HomePage = () => {
   return (
@@ -63,6 +63,9 @@ const HomePage = () => {
             </button>
           </div>
         </section>
+
+        {/* Contact Us */}
+        <ContactUs />
       </div>
     </Layout>
   );
