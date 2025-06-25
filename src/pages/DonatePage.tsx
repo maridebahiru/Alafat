@@ -16,13 +16,9 @@ const DonatePage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would integrate with your payment processor
-    console.log('Donation submitted:', {
-      amount: donationAmount,
-      type: donationType,
-      donor: donorInfo
-    });
-    alert('Thank you for your generous donation! This would integrate with CHAPA payment gateway.');
+    
+    // Redirect to Chapa payment page
+    window.open('https://chapa.link/donation/view/DN-0o9OTSRq98uP', '_blank');
   };
 
   return (
@@ -187,7 +183,7 @@ const DonatePage = () => {
               >
                 <CreditCard className="w-5 h-5" />
                 <span>
-                  Donate ${donationAmount} {donationType === 'monthly' ? '/month' : ''}
+                  Donate with Chapa
                 </span>
               </button>
             </form>

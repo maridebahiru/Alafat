@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import ProductCard from '../components/ProductCard';
@@ -57,6 +56,11 @@ const ShopPage = () => {
 
   const getTotalItems = () => {
     return cart.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const handleCheckout = () => {
+    // Redirect to Chapa payment page
+    window.open('https://chapa.link/donation/view/DN-0o9OTSRq98uP', '_blank');
   };
 
   if (loading) {
@@ -170,7 +174,10 @@ const ShopPage = () => {
               {getTotalItems()} items - $
               {cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}
             </p>
-            <button className="w-full bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors">
+            <button 
+              onClick={handleCheckout}
+              className="w-full bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors"
+            >
               Checkout with CHAPA
             </button>
           </div>
