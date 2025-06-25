@@ -3,6 +3,8 @@ import Layout from '../components/Layout';
 import ProductCard from '../components/ProductCard';
 import { ShoppingCart, Filter } from 'lucide-react';
 import { getProducts, Product } from '../services/firebaseService';
+import { initializeChapaPayment, generateTransactionReference } from '../services/chapaPaymentService';
+import { createOrder } from '../services/chapaService';
 
 interface CartItem extends Product {
   quantity: number;
@@ -58,9 +60,54 @@ const ShopPage = () => {
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const handleCheckout = () => {
-    // Redirect to Chapa payment page
-    window.open('https://chapa.link/donation/view/DN-0o9OTSRq98uP', '_blank');
+  const handleCheckout = async () => {
+    if (cart.length === 0) return;
+
+    try {
+      // Generate transaction reference
+      const txRef = generateTransactionReference('ORD');
+      
+      // Calculate total
+      const totalAmount = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+      
+      // Create order record in Firebase
+      const orderId = await createOrder({
+        items: cart.map(item => ({
+          productId: item.id || '',
+          productName: item.name,
+          price: item.price,
+          quantity: item.quantity
+        })),
+        totalAmount,
+        currency: 'ETB',
+        status: 'pending',
+        chapaReference: txRef
+      });
+
+      console.log('Order created:', orderId);
+      
+      // Initialize Chapa payment
+      const checkoutUrl = await initializeChapaPayment({
+        amount: totalAmount,
+        currency: 'ETB',
+        email: 'customer@example.com', // You might want to get this from user
+        first_name: 'Customer',
+        last_name: 'Name',
+        tx_ref: txRef,
+        callback_url: `${window.location.origin}/order-callback`,
+        return_url: `${window.location.origin}/order-success`,
+        customization: {
+          title: 'Alafat Registration Shop',
+          description: `Order of ${cart.length} items`
+        }
+      });
+
+      // Redirect to Chapa checkout
+      window.location.href = checkoutUrl;
+    } catch (error) {
+      console.error('Error processing checkout:', error);
+      alert('Error processing checkout. Please try again.');
+    }
   };
 
   if (loading) {

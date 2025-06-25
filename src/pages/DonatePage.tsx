@@ -1,10 +1,10 @@
-
 import { useState } from 'react';
 import Layout from '../components/Layout';
 import AuthModal from '../components/AuthModal';
 import { Heart, CreditCard, DollarSign, User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { createDonation } from '../services/chapaService';
+import { initializeChapaPayment, generateTransactionReference } from '../services/chapaPaymentService';
 
 const DonatePage = () => {
   const [donationAmount, setDonationAmount] = useState<number | string>('');
@@ -26,6 +26,9 @@ const DonatePage = () => {
     setLoading(true);
 
     try {
+      // Generate transaction reference
+      const txRef = generateTransactionReference('DON');
+      
       // Create donation record in Firebase
       const donationId = await createDonation({
         userId: currentUser?.uid,
@@ -35,15 +38,32 @@ const DonatePage = () => {
         donorName: donorInfo.name,
         donorEmail: donorInfo.email || currentUser?.email || '',
         message: donorInfo.message,
-        status: 'pending'
+        status: 'pending',
+        chapaReference: txRef
       });
 
       console.log('Donation created:', donationId);
       
-      // Redirect to Chapa payment page
-      window.open('https://chapa.link/donation/view/DN-0o9OTSRq98uP', '_blank');
+      // Initialize Chapa payment
+      const checkoutUrl = await initializeChapaPayment({
+        amount: Number(donationAmount),
+        currency: 'ETB',
+        email: donorInfo.email || currentUser?.email || '',
+        first_name: donorInfo.name.split(' ')[0] || 'Anonymous',
+        last_name: donorInfo.name.split(' ').slice(1).join(' ') || 'Donor',
+        tx_ref: txRef,
+        callback_url: `${window.location.origin}/donation-callback`,
+        return_url: `${window.location.origin}/donation-success`,
+        customization: {
+          title: 'Alafat Registration Donation',
+          description: donorInfo.message || 'Supporting Alafat Registration'
+        }
+      });
+
+      // Redirect to Chapa checkout
+      window.location.href = checkoutUrl;
     } catch (error) {
-      console.error('Error creating donation:', error);
+      console.error('Error processing donation:', error);
       alert('Error processing donation. Please try again.');
     } finally {
       setLoading(false);
