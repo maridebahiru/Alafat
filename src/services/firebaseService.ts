@@ -1,4 +1,3 @@
-
 import { collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
@@ -20,6 +19,15 @@ export interface Product {
   image: string;
   category: string;
   description?: string;
+}
+
+export interface Advert {
+  id: string;
+  image: string;
+  isActive: boolean;
+  isExternal: boolean;
+  link?: string;
+  order?: number;
 }
 
 // Songs functions
@@ -105,5 +113,43 @@ export const addProduct = async (product: Omit<Product, 'id'>): Promise<string |
   } catch (error) {
     console.error('Error adding product:', error);
     return null;
+  }
+};
+
+// Adverts functions
+export const getAdverts = async (): Promise<Advert[]> => {
+  try {
+    const advertsCollection = collection(db, 'adverts');
+    const advertSnapshot = await getDocs(advertsCollection);
+    const adverts = advertSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Advert));
+    
+    // Sort by order if available
+    return adverts.sort((a, b) => (a.order || 0) - (b.order || 0));
+  } catch (error) {
+    console.error('Error fetching adverts:', error);
+    return [];
+  }
+};
+
+export const getInternalAdverts = async (): Promise<Advert[]> => {
+  try {
+    const adverts = await getAdverts();
+    return adverts.filter(ad => ad.isActive && !ad.isExternal);
+  } catch (error) {
+    console.error('Error fetching internal adverts:', error);
+    return [];
+  }
+};
+
+export const getExternalAdverts = async (): Promise<Advert[]> => {
+  try {
+    const adverts = await getAdverts();
+    return adverts.filter(ad => ad.isActive && ad.isExternal);
+  } catch (error) {
+    console.error('Error fetching external adverts:', error);
+    return [];
   }
 };
