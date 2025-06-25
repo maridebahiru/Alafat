@@ -16,25 +16,6 @@ const HomePage = () => {
           <AdCarousel />
         </section>
 
-        {/* Internal Promotions */}
-        <section className="grid md:grid-cols-2 gap-6">
-          <div className="bg-gradient-to-r from-secondary to-secondary-dark text-primary rounded-lg p-6">
-            <h3 className="text-xl font-bold mb-2">Join Our Community</h3>
-            <p className="mb-4">Connect with fellow believers and strengthen your faith journey.</p>
-            <button className="bg-white text-primary px-4 py-2 rounded-md font-medium hover:bg-gray-100 transition-colors">
-              Learn More
-            </button>
-          </div>
-          
-          <div className="bg-primary text-white rounded-lg p-6">
-            <h3 className="text-xl font-bold mb-2">Weekly Services</h3>
-            <p className="mb-4 text-secondary opacity-90">Join us every Sunday for worship and fellowship.</p>
-            <button className="bg-secondary text-primary px-4 py-2 rounded-md font-medium hover:bg-secondary/90 transition-colors">
-              View Schedule
-            </button>
-          </div>
-        </section>
-
         {/* Featured Songs */}
         <section>
           <FeaturedSongs />
@@ -57,9 +38,14 @@ const HomePage = () => {
             Your donations help us continue our mission of faith, community, and service.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+            <a 
+              href="https://chapa.link/donation/view/DN-0o9OTSRq98uP"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-block"
+            >
               Donate Now
-            </button>
+            </a>
             <button className="border border-primary text-primary hover:bg-primary hover:text-white px-6 py-3 rounded-lg font-medium transition-colors">
               Learn More
             </button>
