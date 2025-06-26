@@ -1,25 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
-import AuthModal from '../components/AuthModal';
 import { Heart, CreditCard, DollarSign, User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { createDonation } from '../services/chapaService';
+import { createDonation, getDonationOptions } from '../services/firebaseService';
 import { initializeChapaPayment, generateTransactionReference } from '../services/chapaPaymentService';
 
 const DonatePage = () => {
+  const { currentUser, userProfile } = useAuth();
   const [donationAmount, setDonationAmount] = useState<number | string>('');
   const [donationType, setDonationType] = useState<'one-time' | 'monthly'>('one-time');
   const [donorInfo, setDonorInfo] = useState({
-    name: '',
-    email: '',
     message: ''
   });
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   const [loading, setLoading] = useState(false);
+  const [donationOptions, setDonationOptions] = useState<any[]>([]);
 
-  const { currentUser, logout } = useAuth();
   const presetAmounts = [25, 50, 100, 250, 500];
+
+  useEffect(() => {
+    const fetchDonationOptions = async () => {
+      if (userProfile?.location) {
+        const options = await getDonationOptions(userProfile.location);
+        setDonationOptions(options);
+      }
+    };
+
+    fetchDonationOptions();
+  }, [userProfile?.location]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,11 +42,12 @@ const DonatePage = () => {
         amount: Number(donationAmount),
         currency: 'ETB',
         donationType,
-        donorName: donorInfo.name,
-        donorEmail: donorInfo.email || currentUser?.email || '',
+        donorName: userProfile?.fullName || '',
+        donorEmail: userProfile?.email || '',
         message: donorInfo.message,
         status: 'pending',
-        chapaReference: txRef
+        chapaReference: txRef,
+        location: userProfile?.location || 'AA'
       });
 
       console.log('Donation created:', donationId);
@@ -48,9 +56,9 @@ const DonatePage = () => {
       const checkoutUrl = await initializeChapaPayment({
         amount: Number(donationAmount),
         currency: 'ETB',
-        email: donorInfo.email || currentUser?.email || '',
-        first_name: donorInfo.name.split(' ')[0] || 'Anonymous',
-        last_name: donorInfo.name.split(' ').slice(1).join(' ') || 'Donor',
+        email: userProfile?.email || '',
+        first_name: userProfile?.fullName?.split(' ')[0] || 'Anonymous',
+        last_name: userProfile?.fullName?.split(' ').slice(1).join(' ') || 'Donor',
         tx_ref: txRef,
         callback_url: `${window.location.origin}/donation-callback`,
         return_url: `${window.location.origin}/donation-success`,
@@ -70,10 +78,6 @@ const DonatePage = () => {
     }
   };
 
-  const switchAuthMode = () => {
-    setAuthMode(authMode === 'login' ? 'signup' : 'login');
-  };
-
   return (
     <Layout>
       <div className="container mx-auto px-4 py-6">
@@ -85,38 +89,36 @@ const DonatePage = () => {
           <h1 className="text-3xl font-bold text-primary mb-4">Support Alafat Registration</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Your generous donations help us continue our mission of faith, community service, 
-            and preserving Ethiopian Orthodox Christian traditions for future generations.
+            and preserving Ethiopian Orthodox Christian traditions for location: {userProfile?.location}
           </p>
         </div>
 
         <div className="max-w-2xl mx-auto">
           {/* User Status */}
           <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-            {currentUser ? (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <User className="w-5 h-5 text-primary" />
-                  <span className="text-gray-700">Signed in as: {currentUser.email}</span>
-                </div>
-                <button
-                  onClick={logout}
-                  className="text-sm text-primary hover:text-primary/80"
-                >
-                  Sign Out
-                </button>
+            <div className="flex items-center space-x-2">
+              <User className="w-5 h-5 text-primary" />
+              <div>
+                <span className="text-gray-700">Welcome, {userProfile?.fullName}</span>
+                <div className="text-sm text-gray-500">Location: {userProfile?.location}</div>
               </div>
-            ) : (
-              <div className="text-center">
-                <p className="text-gray-600 mb-3">Sign in to track your donations</p>
-                <button
-                  onClick={() => setShowAuthModal(true)}
-                  className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
-                >
-                  Sign In / Sign Up
-                </button>
-              </div>
-            )}
+            </div>
           </div>
+
+          {/* Available Donation Options */}
+          {donationOptions.length > 0 && (
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-primary mb-4">Available for your location:</h3>
+              <div className="grid gap-4">
+                {donationOptions.map((option) => (
+                  <div key={option.id} className="p-4 bg-white rounded-lg shadow-md border">
+                    <h4 className="font-semibold text-gray-900">{option.title}</h4>
+                    <p className="text-sm text-gray-600">{option.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Impact Section */}
           <div className="grid md:grid-cols-3 gap-6 mb-12">
@@ -212,56 +214,24 @@ const DonatePage = () => {
                 </div>
               </div>
 
-              {/* Donor Information */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-primary">Donor Information</h3>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    value={donorInfo.name}
-                    onChange={(e) => setDonorInfo({...donorInfo, name: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    required
-                  />
-                </div>
-                
-                {!currentUser && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      value={donorInfo.email}
-                      onChange={(e) => setDonorInfo({...donorInfo, email: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                      required
-                    />
-                  </div>
-                )}
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Message (Optional)
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={donorInfo.message}
-                    onChange={(e) => setDonorInfo({...donorInfo, message: e.target.value})}
-                    placeholder="Share why you're supporting Alafat Registration..."
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
-                </div>
+              {/* Message */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Message (Optional)
+                </label>
+                <textarea
+                  rows={3}
+                  value={donorInfo.message}
+                  onChange={(e) => setDonorInfo({...donorInfo, message: e.target.value})}
+                  placeholder="Share why you're supporting Alafat Registration..."
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={!donationAmount || !donorInfo.name || (!currentUser && !donorInfo.email) || loading}
+                disabled={!donationAmount || loading}
                 className="w-full bg-gradient-to-r from-primary to-secondary-dark hover:from-primary/90 hover:to-secondary-dark/90 text-white py-4 px-6 rounded-lg font-semibold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
               >
                 <CreditCard className="w-5 h-5" />
@@ -278,13 +248,6 @@ const DonatePage = () => {
             </div>
           </div>
         </div>
-
-        <AuthModal
-          isOpen={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-          mode={authMode}
-          onSwitchMode={switchAuthMode}
-        />
       </div>
     </Layout>
   );

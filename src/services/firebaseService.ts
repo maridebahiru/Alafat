@@ -1,155 +1,146 @@
-import { collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+
+import { 
+  collection, 
+  doc, 
+  getDoc, 
+  setDoc, 
+  getDocs, 
+  addDoc, 
+  updateDoc, 
+  query, 
+  where, 
+  orderBy,
+  serverTimestamp 
+} from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
-export interface Song {
-  id: string;
-  title: string;
-  artist: string;
-  cover: string;
-  imageUrl: string;
-  duration: string;
-  lyrics: string;
-  audioUrl?: string;
+export interface UserProfile {
+  uid: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  location: 'AA' | 'DD';
+  baptizedName: string;
+  emailVerified: boolean;
+  profileCompleted: boolean;
+  createdAt: any;
 }
 
 export interface Product {
-  id: string;
+  id?: string;
   name: string;
   price: number;
   image: string;
   category: string;
-  description?: string;
+  location: 'AA' | 'DD' | 'both';
 }
 
-export interface Advert {
-  id: string;
-  image: string;
-  isActive: boolean;
-  isExternal: boolean;
-  link?: string;
-  order?: number;
+export interface Donation {
+  id?: string;
+  userId?: string;
+  amount: number;
+  currency: string;
+  donationType: 'one-time' | 'monthly';
+  donorName: string;
+  donorEmail: string;
+  message?: string;
+  status: 'pending' | 'completed' | 'failed';
+  chapaReference: string;
+  location: 'AA' | 'DD' | 'both';
+  createdAt: any;
 }
 
-// Songs functions
-export const getSongs = async (): Promise<Song[]> => {
+// User Profile Operations
+export const createUserProfile = async (profileData: Omit<UserProfile, 'createdAt'>) => {
   try {
-    const songsCollection = collection(db, 'songs');
-    const songSnapshot = await getDocs(songsCollection);
-    return songSnapshot.docs.map(doc => ({
+    await setDoc(doc(db, 'users', profileData.uid), {
+      ...profileData,
+      createdAt: serverTimestamp()
+    });
+    return profileData.uid;
+  } catch (error) {
+    console.error('Error creating user profile:', error);
+    throw error;
+  }
+};
+
+export const getUserProfile = async (uid: string): Promise<UserProfile | null> => {
+  try {
+    const docRef = doc(db, 'users', uid);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() } as UserProfile;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error getting user profile:', error);
+    throw error;
+  }
+};
+
+export const updateUserProfile = async (uid: string, updates: Partial<UserProfile>) => {
+  try {
+    const docRef = doc(db, 'users', uid);
+    await updateDoc(docRef, updates);
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    throw error;
+  }
+};
+
+// Product Operations
+export const getProducts = async (location?: 'AA' | 'DD'): Promise<Product[]> => {
+  try {
+    let q;
+    if (location) {
+      q = query(
+        collection(db, 'products'), 
+        where('location', 'in', [location, 'both']),
+        orderBy('name')
+      );
+    } else {
+      q = query(collection(db, 'products'), orderBy('name'));
+    }
+    
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
-    } as Song));
+    })) as Product[];
   } catch (error) {
-    console.error('Error fetching songs:', error);
+    console.error('Error getting products:', error);
     return [];
   }
 };
 
-export const getSong = async (id: string): Promise<Song | null> => {
+// Donation Operations
+export const createDonation = async (donationData: Omit<Donation, 'id' | 'createdAt'>) => {
   try {
-    const songDoc = doc(db, 'songs', id);
-    const songSnapshot = await getDoc(songDoc);
-    
-    if (songSnapshot.exists()) {
-      return {
-        id: songSnapshot.id,
-        ...songSnapshot.data()
-      } as Song;
-    }
-    return null;
-  } catch (error) {
-    console.error('Error fetching song:', error);
-    return null;
-  }
-};
-
-export const addSong = async (song: Omit<Song, 'id'>): Promise<string | null> => {
-  try {
-    const docRef = await addDoc(collection(db, 'songs'), song);
+    const docRef = await addDoc(collection(db, 'donations'), {
+      ...donationData,
+      createdAt: serverTimestamp()
+    });
     return docRef.id;
   } catch (error) {
-    console.error('Error adding song:', error);
-    return null;
+    console.error('Error creating donation:', error);
+    throw error;
   }
 };
 
-// Products functions
-export const getProducts = async (): Promise<Product[]> => {
-  try {
-    const productsCollection = collection(db, 'products');
-    const productSnapshot = await getDocs(productsCollection);
-    return productSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    } as Product));
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    return [];
-  }
-};
+export const getDonationOptions = async (location?: 'AA' | 'DD') => {
+  // This would return donation options filtered by location
+  // For now, returning basic structure
+  const baseOptions = [
+    { id: 1, title: 'General Fund', description: 'Support our general mission', location: 'both' },
+    { id: 2, title: 'Education Fund', description: 'Support religious education', location: 'AA' },
+    { id: 3, title: 'Community Support', description: 'Help local community', location: 'DD' }
+  ];
 
-export const getProduct = async (id: string): Promise<Product | null> => {
-  try {
-    const productDoc = doc(db, 'products', id);
-    const productSnapshot = await getDoc(productDoc);
-    
-    if (productSnapshot.exists()) {
-      return {
-        id: productSnapshot.id,
-        ...productSnapshot.data()
-      } as Product;
-    }
-    return null;
-  } catch (error) {
-    console.error('Error fetching product:', error);
-    return null;
+  if (location) {
+    return baseOptions.filter(option => option.location === location || option.location === 'both');
   }
-};
-
-export const addProduct = async (product: Omit<Product, 'id'>): Promise<string | null> => {
-  try {
-    const docRef = await addDoc(collection(db, 'products'), product);
-    return docRef.id;
-  } catch (error) {
-    console.error('Error adding product:', error);
-    return null;
-  }
-};
-
-// Adverts functions
-export const getAdverts = async (): Promise<Advert[]> => {
-  try {
-    const advertsCollection = collection(db, 'adverts');
-    const advertSnapshot = await getDocs(advertsCollection);
-    const adverts = advertSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    } as Advert));
-    
-    // Sort by order if available
-    return adverts.sort((a, b) => (a.order || 0) - (b.order || 0));
-  } catch (error) {
-    console.error('Error fetching adverts:', error);
-    return [];
-  }
-};
-
-export const getInternalAdverts = async (): Promise<Advert[]> => {
-  try {
-    const adverts = await getAdverts();
-    return adverts.filter(ad => ad.isActive && !ad.isExternal);
-  } catch (error) {
-    console.error('Error fetching internal adverts:', error);
-    return [];
-  }
-};
-
-export const getExternalAdverts = async (): Promise<Advert[]> => {
-  try {
-    const adverts = await getAdverts();
-    return adverts.filter(ad => ad.isActive && ad.isExternal);
-  } catch (error) {
-    console.error('Error fetching external adverts:', error);
-    return [];
-  }
+  
+  return baseOptions;
 };

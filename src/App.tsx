@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import RouteGuard from "./components/RouteGuard";
+import ProfileCompletionModal from "./components/ProfileCompletionModal";
 import HomePage from "./pages/HomePage";
 import AboutPage from "./pages/AboutPage";
 import SongsPage from "./pages/SongsPage";
@@ -21,14 +23,17 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/songs" element={<SongsPage />} />
-            <Route path="/shop" element={<ShopPage />} />
-            <Route path="/donate" element={<DonatePage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <RouteGuard>
+            <ProfileCompletionModal />
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/songs" element={<SongsPage />} />
+              <Route path="/shop" element={<ShopPage />} />
+              <Route path="/donate" element={<DonatePage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </RouteGuard>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

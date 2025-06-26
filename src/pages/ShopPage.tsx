@@ -5,12 +5,14 @@ import { ShoppingCart, Filter } from 'lucide-react';
 import { getProducts, Product } from '../services/firebaseService';
 import { initializeChapaPayment, generateTransactionReference } from '../services/chapaPaymentService';
 import { createOrder } from '../services/chapaService';
+import { useAuth } from '../contexts/AuthContext';
 
 interface CartItem extends Product {
   quantity: number;
 }
 
 const ShopPage = () => {
+  const { userProfile } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,13 +23,16 @@ const ShopPage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      const fetchedProducts = await getProducts();
+      // Filter products by user location
+      const fetchedProducts = await getProducts(userProfile?.location);
       setProducts(fetchedProducts);
       setLoading(false);
     };
 
-    fetchProducts();
-  }, []);
+    if (userProfile?.location) {
+      fetchProducts();
+    }
+  }, [userProfile?.location]);
 
   const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
 
@@ -90,9 +95,9 @@ const ShopPage = () => {
       const checkoutUrl = await initializeChapaPayment({
         amount: totalAmount,
         currency: 'ETB',
-        email: 'customer@example.com', // You might want to get this from user
-        first_name: 'Customer',
-        last_name: 'Name',
+        email: userProfile?.email || 'customer@example.com',
+        first_name: userProfile?.fullName?.split(' ')[0] || 'Customer',
+        last_name: userProfile?.fullName?.split(' ').slice(1).join(' ') || 'Name',
         tx_ref: txRef,
         callback_url: `${window.location.origin}/order-callback`,
         return_url: `${window.location.origin}/order-success`,
@@ -115,7 +120,7 @@ const ShopPage = () => {
       <Layout>
         <div className="container mx-auto px-4 py-6">
           <div className="text-center">
-            <p className="text-gray-600">Loading products...</p>
+            <p className="text-gray-600">Loading products for your location ({userProfile?.location})...</p>
           </div>
         </div>
       </Layout>
@@ -129,7 +134,9 @@ const ShopPage = () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-primary mb-2">Shop</h1>
-            <p className="text-gray-600">Authentic Ethiopian Orthodox Christian items</p>
+            <p className="text-gray-600">
+              Authentic Ethiopian Orthodox Christian items for location: {userProfile?.location}
+            </p>
           </div>
           <div className="relative">
             <ShoppingCart className="w-8 h-8 text-primary" />
