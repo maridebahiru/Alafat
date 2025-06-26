@@ -50,6 +50,27 @@ export interface Donation {
   createdAt: any;
 }
 
+export interface Song {
+  id: string;
+  title: string;
+  artist: string;
+  duration: string;
+  audioUrl?: string;
+  imageUrl?: string;
+  lyrics: string;
+  location: 'AA' | 'DD' | 'both';
+}
+
+export interface Advert {
+  id: string;
+  title: string;
+  image: string;
+  link?: string;
+  type: 'internal' | 'external';
+  location: 'AA' | 'DD' | 'both';
+  active: boolean;
+}
+
 // User Profile Operations
 export const createUserProfile = async (profileData: Omit<UserProfile, 'createdAt'>) => {
   try {
@@ -70,7 +91,7 @@ export const getUserProfile = async (uid: string): Promise<UserProfile | null> =
     const docSnap = await getDoc(docRef);
     
     if (docSnap.exists()) {
-      return { id: docSnap.id, ...docSnap.data() } as UserProfile;
+      return { uid: docSnap.id, ...docSnap.data() } as UserProfile;
     } else {
       return null;
     }
@@ -108,9 +129,93 @@ export const getProducts = async (location?: 'AA' | 'DD'): Promise<Product[]> =>
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
-    })) as Product[];
+    } as Product));
   } catch (error) {
     console.error('Error getting products:', error);
+    return [];
+  }
+};
+
+// Song Operations
+export const getSongs = async (location?: 'AA' | 'DD'): Promise<Song[]> => {
+  try {
+    let q;
+    if (location) {
+      q = query(
+        collection(db, 'songs'), 
+        where('location', 'in', [location, 'both']),
+        orderBy('title')
+      );
+    } else {
+      q = query(collection(db, 'songs'), orderBy('title'));
+    }
+    
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Song));
+  } catch (error) {
+    console.error('Error getting songs:', error);
+    return [];
+  }
+};
+
+// Advertisement Operations
+export const getInternalAdverts = async (location?: 'AA' | 'DD'): Promise<Advert[]> => {
+  try {
+    let q;
+    if (location) {
+      q = query(
+        collection(db, 'adverts'), 
+        where('type', '==', 'internal'),
+        where('active', '==', true),
+        where('location', 'in', [location, 'both'])
+      );
+    } else {
+      q = query(
+        collection(db, 'adverts'), 
+        where('type', '==', 'internal'),
+        where('active', '==', true)
+      );
+    }
+    
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Advert));
+  } catch (error) {
+    console.error('Error getting internal adverts:', error);
+    return [];
+  }
+};
+
+export const getExternalAdverts = async (location?: 'AA' | 'DD'): Promise<Advert[]> => {
+  try {
+    let q;
+    if (location) {
+      q = query(
+        collection(db, 'adverts'), 
+        where('type', '==', 'external'),
+        where('active', '==', true),
+        where('location', 'in', [location, 'both'])
+      );
+    } else {
+      q = query(
+        collection(db, 'adverts'), 
+        where('type', '==', 'external'),
+        where('active', '==', true)
+      );
+    }
+    
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Advert));
+  } catch (error) {
+    console.error('Error getting external adverts:', error);
     return [];
   }
 };
