@@ -22,7 +22,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, signup, loginWithGoogle, resendVerification } = useAuth();
+  const { login, signup, loginWithGoogle } = useAuth();
 
   const resetForm = () => {
     setFormData({
@@ -55,8 +55,9 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
         }
 
         await signup(formData.email, formData.password, formData.fullName);
-        setSuccess('Account created! Please check your email for verification link.');
+        setSuccess('Account created successfully!');
         resetForm();
+        onClose();
       } else {
         await login(formData.email, formData.password);
         onClose();
@@ -81,15 +82,6 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
     }
   };
 
-  const handleResendVerification = async () => {
-    try {
-      await resendVerification();
-      setSuccess('Verification email sent! Please check your inbox.');
-    } catch (error: any) {
-      setError(error.message);
-    }
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -108,14 +100,6 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
           {success && (
             <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
               {success}
-              {success.includes('verification') && (
-                <button
-                  onClick={handleResendVerification}
-                  className="ml-2 text-green-600 underline hover:text-green-800"
-                >
-                  Resend verification email
-                </button>
-              )}
             </div>
           )}
 

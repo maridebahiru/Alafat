@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   User, 
@@ -5,12 +6,11 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   signOut,
-  onAuthStateChanged,
-  sendEmailVerification,
-  reload
+  onAuthStateChanged
 } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
-import { getUserProfile, createUserProfile, UserProfile } from '../services/userService';
+import { getUserProfile, createUserProfile } from '../services/userService';
+import { UserProfile } from '../services/types';
 
 interface AuthContextType {
   currentUser: User | null;
@@ -22,7 +22,6 @@ interface AuthContextType {
   loading: boolean;
   needsProfileCompletion: boolean;
   completeProfile: (profileData: Partial<UserProfile>) => Promise<void>;
-  resendVerification: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -46,11 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       
-      // Send verification email immediately
-      await sendEmailVerification(user);
-      console.log('Verification email sent successfully to:', user.email);
-      
-      // Create initial user profile
+      // Create initial user profile without email verification
       await createUserProfile({
         uid: user.uid,
         fullName,
@@ -58,7 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         phoneNumber: '',
         location: 'AA',
         baptizedName: '',
-        emailVerified: false,
+        emailVerified: true, // Set to true since we're removing email verification
         profileCompleted: false
       });
     } catch (error) {
@@ -68,16 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const login = async (email: string, password: string) => {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    
-    // Reload user to get latest verification status
-    await reload(user);
-    
-    if (!user.emailVerified) {
-      await signOut(auth);
-      throw new Error('Please verify your email before signing in. Check your inbox for the verification link.');
-    }
+    await signInWithEmailAndPassword(auth, email, password);
   };
 
   const loginWithGoogle = async () => {
@@ -116,25 +102,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       phoneNumber: profileData.phoneNumber || '',
       location: profileData.location || 'AA',
       baptizedName: profileData.baptizedName || '',
-      emailVerified: currentUser.emailVerified,
+      emailVerified: true,
       profileCompleted: true
     });
     
     const updatedProfile = await getUserProfile(currentUser.uid);
     setUserProfile(updatedProfile);
     setNeedsProfileCompletion(false);
-  };
-
-  const resendVerification = async () => {
-    if (currentUser && !currentUser.emailVerified) {
-      try {
-        await sendEmailVerification(currentUser);
-        console.log('Verification email resent successfully to:', currentUser.email);
-      } catch (error) {
-        console.error('Error resending verification email:', error);
-        throw new Error('Failed to resend verification email. Please try again.');
-      }
-    }
   };
 
   useEffect(() => {
@@ -147,7 +121,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUserProfile(profile);
         
         // Check if profile needs completion
-        if (user.emailVerified && profile && !profile.profileCompleted) {
+        if (profile && !profile.profileCompleted) {
           setNeedsProfileCompletion(true);
         }
       } else {
@@ -170,8 +144,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logout,
     loading,
     needsProfileCompletion,
-    completeProfile,
-    resendVerification
+    completeProfile
   };
 
   return (

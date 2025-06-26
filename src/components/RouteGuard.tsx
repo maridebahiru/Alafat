@@ -17,8 +17,8 @@ const RouteGuard = ({ children }: RouteGuardProps) => {
     setAuthMode(authMode === 'login' ? 'signup' : 'login');
   };
 
-  // Show auth modal if user is not authenticated or email not verified
-  if (!currentUser || !currentUser.emailVerified || !userProfile?.profileCompleted) {
+  // Show auth modal if user is not authenticated or profile not completed
+  if (!currentUser || !userProfile?.profileCompleted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center p-4">
         <div className="text-center max-w-md">
@@ -50,15 +50,6 @@ const RouteGuard = ({ children }: RouteGuardProps) => {
               >
                 Sign In
               </button>
-            </div>
-          )}
-
-          {currentUser && !currentUser.emailVerified && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <h3 className="font-semibold text-yellow-800 mb-2">Email Verification Required</h3>
-              <p className="text-sm text-yellow-700">
-                Please check your email and click the verification link to continue.
-              </p>
             </div>
           )}
         </div>
