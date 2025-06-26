@@ -7,7 +7,8 @@ import {
   signInWithPopup,
   signOut,
   onAuthStateChanged,
-  sendEmailVerification
+  sendEmailVerification,
+  reload
 } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
 import { getUserProfile, createUserProfile, UserProfile } from '../services/firebaseService';
@@ -45,8 +46,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     
-    // Send verification email
-    await sendEmailVerification(user);
+    // Send verification email immediately after account creation
+    try {
+      await sendEmailVerification(user);
+      console.log('Verification email sent to:', user.email);
+    } catch (verificationError) {
+      console.error('Error sending verification email:', verificationError);
+      // Don't throw here, allow profile creation to continue
+    }
     
     // Create initial user profile
     await createUserProfile({
@@ -64,6 +71,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
+    
+    // Reload user to get latest verification status
+    await reload(user);
     
     if (!user.emailVerified) {
       await signOut(auth);
@@ -100,11 +110,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const completeProfile = async (profileData: Partial<UserProfile>) => {
     if (!currentUser) return;
     
-    const updates = { 
-      ...profileData, 
-      profileCompleted: true 
-    };
-    
     await createUserProfile({
       uid: currentUser.uid,
       fullName: profileData.fullName || userProfile?.fullName || '',
@@ -122,8 +127,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const resendVerification = async () => {
-    if (currentUser) {
-      await sendEmailVerification(currentUser);
+    if (currentUser && !currentUser.emailVerified) {
+      try {
+        await sendEmailVerification(currentUser);
+        console.log('Verification email resent to:', currentUser.email);
+      } catch (error) {
+        console.error('Error resending verification email:', error);
+        throw new Error('Failed to resend verification email. Please try again.');
+      }
     }
   };
 

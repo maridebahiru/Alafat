@@ -129,19 +129,13 @@ export const getProducts = async (location?: 'AA' | 'DD'): Promise<Product[]> =>
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => {
       const data = doc.data();
-      if (data) {
-        return {
-          id: doc.id,
-          ...data
-        } as Product;
-      }
       return {
         id: doc.id,
-        name: '',
-        price: 0,
-        image: '',
-        category: '',
-        location: 'both'
+        name: data?.name || '',
+        price: data?.price || 0,
+        image: data?.image || '',
+        category: data?.category || '',
+        location: data?.location || 'both'
       } as Product;
     });
   } catch (error) {
@@ -167,19 +161,15 @@ export const getSongs = async (location?: 'AA' | 'DD'): Promise<Song[]> => {
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => {
       const data = doc.data();
-      if (data) {
-        return {
-          id: doc.id,
-          ...data
-        } as Song;
-      }
       return {
         id: doc.id,
-        title: '',
-        artist: '',
-        duration: '',
-        lyrics: '',
-        location: 'both'
+        title: data?.title || '',
+        artist: data?.artist || '',
+        duration: data?.duration || '',
+        audioUrl: data?.audioUrl,
+        imageUrl: data?.imageUrl,
+        lyrics: data?.lyrics || '',
+        location: data?.location || 'both'
       } as Song;
     });
   } catch (error) {
@@ -210,19 +200,14 @@ export const getInternalAdverts = async (location?: 'AA' | 'DD'): Promise<Advert
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => {
       const data = doc.data();
-      if (data) {
-        return {
-          id: doc.id,
-          ...data
-        } as Advert;
-      }
       return {
         id: doc.id,
-        title: '',
-        image: '',
+        title: data?.title || '',
+        image: data?.image || '',
+        link: data?.link,
         type: 'internal',
-        location: 'both',
-        active: true
+        location: data?.location || 'both',
+        active: data?.active !== false
       } as Advert;
     });
   } catch (error) {
@@ -252,19 +237,14 @@ export const getExternalAdverts = async (location?: 'AA' | 'DD'): Promise<Advert
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => {
       const data = doc.data();
-      if (data) {
-        return {
-          id: doc.id,
-          ...data
-        } as Advert;
-      }
       return {
         id: doc.id,
-        title: '',
-        image: '',
+        title: data?.title || '',
+        image: data?.image || '',
+        link: data?.link,
         type: 'external',
-        location: 'both',
-        active: true
+        location: data?.location || 'both',
+        active: data?.active !== false
       } as Advert;
     });
   } catch (error) {
