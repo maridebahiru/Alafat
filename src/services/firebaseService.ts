@@ -91,7 +91,8 @@ export const getUserProfile = async (uid: string): Promise<UserProfile | null> =
     const docSnap = await getDoc(docRef);
     
     if (docSnap.exists()) {
-      return { uid: docSnap.id, ...docSnap.data() } as UserProfile;
+      const data = docSnap.data();
+      return { uid: docSnap.id, ...data } as UserProfile;
     } else {
       return null;
     }
@@ -128,9 +129,19 @@ export const getProducts = async (location?: 'AA' | 'DD'): Promise<Product[]> =>
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => {
       const data = doc.data();
+      if (data) {
+        return {
+          id: doc.id,
+          ...data
+        } as Product;
+      }
       return {
         id: doc.id,
-        ...data
+        name: '',
+        price: 0,
+        image: '',
+        category: '',
+        location: 'both'
       } as Product;
     });
   } catch (error) {
@@ -156,9 +167,19 @@ export const getSongs = async (location?: 'AA' | 'DD'): Promise<Song[]> => {
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => {
       const data = doc.data();
+      if (data) {
+        return {
+          id: doc.id,
+          ...data
+        } as Song;
+      }
       return {
         id: doc.id,
-        ...data
+        title: '',
+        artist: '',
+        duration: '',
+        lyrics: '',
+        location: 'both'
       } as Song;
     });
   } catch (error) {
@@ -189,9 +210,19 @@ export const getInternalAdverts = async (location?: 'AA' | 'DD'): Promise<Advert
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => {
       const data = doc.data();
+      if (data) {
+        return {
+          id: doc.id,
+          ...data
+        } as Advert;
+      }
       return {
         id: doc.id,
-        ...data
+        title: '',
+        image: '',
+        type: 'internal',
+        location: 'both',
+        active: true
       } as Advert;
     });
   } catch (error) {
@@ -221,9 +252,19 @@ export const getExternalAdverts = async (location?: 'AA' | 'DD'): Promise<Advert
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => {
       const data = doc.data();
+      if (data) {
+        return {
+          id: doc.id,
+          ...data
+        } as Advert;
+      }
       return {
         id: doc.id,
-        ...data
+        title: '',
+        image: '',
+        type: 'external',
+        location: 'both',
+        active: true
       } as Advert;
     });
   } catch (error) {
