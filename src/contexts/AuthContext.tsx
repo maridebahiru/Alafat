@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   User, 
@@ -11,7 +10,7 @@ import {
   reload
 } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
-import { getUserProfile, createUserProfile, UserProfile } from '../services/firebaseService';
+import { getUserProfile, createUserProfile, UserProfile } from '../services/userService';
 
 interface AuthContextType {
   currentUser: User | null;
@@ -43,29 +42,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [needsProfileCompletion, setNeedsProfileCompletion] = useState(false);
 
   const signup = async (email: string, password: string, fullName: string) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    
-    // Send verification email immediately after account creation
     try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Send verification email immediately
       await sendEmailVerification(user);
-      console.log('Verification email sent to:', user.email);
-    } catch (verificationError) {
-      console.error('Error sending verification email:', verificationError);
-      // Don't throw here, allow profile creation to continue
+      console.log('Verification email sent successfully to:', user.email);
+      
+      // Create initial user profile
+      await createUserProfile({
+        uid: user.uid,
+        fullName,
+        email: user.email || '',
+        phoneNumber: '',
+        location: 'AA',
+        baptizedName: '',
+        emailVerified: false,
+        profileCompleted: false
+      });
+    } catch (error) {
+      console.error('Error during signup:', error);
+      throw error;
     }
-    
-    // Create initial user profile
-    await createUserProfile({
-      uid: user.uid,
-      fullName,
-      email: user.email || '',
-      phoneNumber: '',
-      location: 'AA',
-      baptizedName: '',
-      emailVerified: false,
-      profileCompleted: false
-    });
   };
 
   const login = async (email: string, password: string) => {
@@ -130,7 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (currentUser && !currentUser.emailVerified) {
       try {
         await sendEmailVerification(currentUser);
-        console.log('Verification email resent to:', currentUser.email);
+        console.log('Verification email resent successfully to:', currentUser.email);
       } catch (error) {
         console.error('Error resending verification email:', error);
         throw new Error('Failed to resend verification email. Please try again.');
