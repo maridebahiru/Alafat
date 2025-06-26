@@ -1,10 +1,11 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { User, Phone, MapPin, Heart } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const ProfileCompletionModal = () => {
-  const { currentUser, userProfile, needsProfileCompletion, completeProfile } = useAuth();
+  const { currentUser, userProfile, completeProfile } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     fullName: userProfile?.fullName || currentUser?.displayName || '',
     email: userProfile?.email || currentUser?.email || '',
@@ -14,6 +15,13 @@ const ProfileCompletionModal = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Show modal if user is logged in but profile is not completed
+  useEffect(() => {
+    if (currentUser && userProfile && !userProfile.profileCompleted) {
+      setIsOpen(true);
+    }
+  }, [currentUser, userProfile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,6 +37,7 @@ const ProfileCompletionModal = () => {
       }
 
       await completeProfile(formData);
+      setIsOpen(false);
     } catch (error: any) {
       setError(error.message);
     } finally {
@@ -36,7 +45,7 @@ const ProfileCompletionModal = () => {
     }
   };
 
-  if (!needsProfileCompletion) return null;
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
