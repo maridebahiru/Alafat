@@ -126,10 +126,13 @@ export const getProducts = async (location?: 'AA' | 'DD'): Promise<Product[]> =>
     }
     
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    } as Product));
+    return querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data
+      } as Product;
+    });
   } catch (error) {
     console.error('Error getting products:', error);
     return [];
@@ -151,10 +154,13 @@ export const getSongs = async (location?: 'AA' | 'DD'): Promise<Song[]> => {
     }
     
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    } as Song));
+    return querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data
+      } as Song;
+    });
   } catch (error) {
     console.error('Error getting songs:', error);
     return [];
@@ -181,10 +187,13 @@ export const getInternalAdverts = async (location?: 'AA' | 'DD'): Promise<Advert
     }
     
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    } as Advert));
+    return querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data
+      } as Advert;
+    });
   } catch (error) {
     console.error('Error getting internal adverts:', error);
     return [];
@@ -210,10 +219,13 @@ export const getExternalAdverts = async (location?: 'AA' | 'DD'): Promise<Advert
     }
     
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    } as Advert));
+    return querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data
+      } as Advert;
+    });
   } catch (error) {
     console.error('Error getting external adverts:', error);
     return [];
