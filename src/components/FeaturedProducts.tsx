@@ -1,27 +1,32 @@
 
 import { useState, useEffect } from 'react';
 import { ShoppingCart } from 'lucide-react';
-import { getProducts, Product } from '../services/firebaseService';
+import { getProducts } from '../services/productService';
+import { Product } from '../services/types';
+import { useAuth } from '../contexts/AuthContext';
 
 interface FeaturedProductsProps {
   onAddToCart?: (product: Product) => void;
 }
 
 const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
+  const { userProfile } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      const fetchedProducts = await getProducts();
+      const fetchedProducts = await getProducts(userProfile?.location);
       // Take only first 5 products for featured section
       setProducts(fetchedProducts.slice(0, 5));
       setLoading(false);
     };
 
-    fetchProducts();
-  }, []);
+    if (userProfile?.location) {
+      fetchProducts();
+    }
+  }, [userProfile?.location]);
 
   const handleAddToCart = (product: Product) => {
     if (onAddToCart) {
@@ -60,7 +65,7 @@ const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
               <div className="p-4">
                 <h4 className="font-semibold text-gray-900 mb-1 truncate">{product.name}</h4>
                 <p className="text-secondary-dark font-bold text-lg mb-3">
-                  ${product.price.toFixed(2)}
+                  {product.price} Ethiopian Birr
                 </p>
                 <button
                   onClick={() => handleAddToCart(product)}

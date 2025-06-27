@@ -1,6 +1,6 @@
 
 import { X } from 'lucide-react';
-import { Song } from '../services/firebaseService';
+import { Song } from '../services/types';
 
 interface LyricsPopupProps {
   song: Song | null;

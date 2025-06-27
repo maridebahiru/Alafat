@@ -1,6 +1,6 @@
 
 import { ShoppingCart } from 'lucide-react';
-import { Product } from '../services/firebaseService';
+import { Product } from '../services/types';
 
 interface ProductCardProps {
   product: Product;
@@ -18,7 +18,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
       <div className="p-4">
         <h3 className="font-semibold text-lg text-gray-900 mb-2">{product.name}</h3>
         <p className="text-secondary-dark font-bold text-xl mb-3">
-          ${product.price.toFixed(2)}
+          {product.price} Ethiopian Birr
         </p>
         <button
           onClick={() => onAddToCart(product)}

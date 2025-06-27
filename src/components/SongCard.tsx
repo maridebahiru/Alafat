@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Play, Pause } from 'lucide-react';
-import { Song } from '../services/firebaseService';
+import { Song } from '../services/types';
 import LyricsPopup from './LyricsPopup';
 
 interface SongCardProps {
