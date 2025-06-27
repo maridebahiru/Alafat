@@ -1,8 +1,10 @@
+
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import ProductCard from '../components/ProductCard';
-import { ShoppingCart, Filter } from 'lucide-react';
-import { getProducts, Product } from '../services/firebaseService';
+import { ShoppingCart, Filter, Search } from 'lucide-react';
+import { getProducts } from '../services/productService';
+import { Product } from '../services/types';
 import { initializeChapaPayment, generateTransactionReference } from '../services/chapaPaymentService';
 import { createOrder } from '../services/chapaService';
 import { useAuth } from '../contexts/AuthContext';
@@ -17,15 +19,17 @@ const ShopPage = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const productsPerPage = 6;
 
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      // Filter products by user location
       const fetchedProducts = await getProducts(userProfile?.location);
       setProducts(fetchedProducts);
+      setFilteredProducts(fetchedProducts);
       setLoading(false);
     };
 
@@ -34,11 +38,27 @@ const ShopPage = () => {
     }
   }, [userProfile?.location]);
 
-  const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
+  useEffect(() => {
+    let filtered = products;
+    
+    // Filter by category
+    if (selectedCategory !== 'All') {
+      filtered = filtered.filter(p => p.category === selectedCategory);
+    }
+    
+    // Filter by search term
+    if (searchTerm) {
+      filtered = filtered.filter(p => 
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.category.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    setFilteredProducts(filtered);
+    setCurrentPage(1);
+  }, [products, selectedCategory, searchTerm]);
 
-  const filteredProducts = selectedCategory === 'All' 
-    ? products 
-    : products.filter(p => p.category === selectedCategory);
+  const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
 
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
   const currentProducts = filteredProducts.slice(
@@ -69,13 +89,9 @@ const ShopPage = () => {
     if (cart.length === 0) return;
 
     try {
-      // Generate transaction reference
       const txRef = generateTransactionReference('ORD');
-      
-      // Calculate total
       const totalAmount = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
       
-      // Create order record in Firebase
       const orderId = await createOrder({
         items: cart.map(item => ({
           productId: item.id || '',
@@ -91,13 +107,13 @@ const ShopPage = () => {
 
       console.log('Order created:', orderId);
       
-      // Initialize Chapa payment
       const checkoutUrl = await initializeChapaPayment({
         amount: totalAmount,
         currency: 'ETB',
         email: userProfile?.email || 'customer@example.com',
         first_name: userProfile?.fullName?.split(' ')[0] || 'Customer',
         last_name: userProfile?.fullName?.split(' ').slice(1).join(' ') || 'Name',
+        phone_number: userProfile?.phoneNumber,
         tx_ref: txRef,
         callback_url: `${window.location.origin}/order-callback`,
         return_url: `${window.location.origin}/order-success`,
@@ -107,7 +123,6 @@ const ShopPage = () => {
         }
       });
 
-      // Redirect to Chapa checkout
       window.location.href = checkoutUrl;
     } catch (error) {
       console.error('Error processing checkout:', error);
@@ -120,7 +135,7 @@ const ShopPage = () => {
       <Layout>
         <div className="container mx-auto px-4 py-6">
           <div className="text-center">
-            <p className="text-gray-600">Loading products for your location ({userProfile?.location})...</p>
+            <p className="text-gray-600">Loading products...</p>
           </div>
         </div>
       </Layout>
@@ -135,7 +150,7 @@ const ShopPage = () => {
           <div>
             <h1 className="text-3xl font-bold text-primary mb-2">Shop</h1>
             <p className="text-gray-600">
-              Authentic Ethiopian Orthodox Christian items for location: {userProfile?.location}
+              Discover our collection of authentic items
             </p>
           </div>
           <div className="relative">
@@ -145,6 +160,20 @@ const ShopPage = () => {
                 {getTotalItems()}
               </span>
             )}
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="mb-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
           </div>
         </div>
 
@@ -158,10 +187,7 @@ const ShopPage = () => {
             {categories.map((category) => (
               <button
                 key={category}
-                onClick={() => {
-                  setSelectedCategory(category);
-                  setCurrentPage(1);
-                }}
+                onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   selectedCategory === category
                     ? 'bg-primary text-white'
@@ -184,6 +210,13 @@ const ShopPage = () => {
             />
           ))}
         </div>
+
+        {/* No products message */}
+        {filteredProducts.length === 0 && !loading && (
+          <div className="text-center py-8">
+            <p className="text-gray-600">No products found for your search criteria.</p>
+          </div>
+        )}
 
         {/* Pagination */}
         {totalPages > 1 && (
@@ -225,8 +258,7 @@ const ShopPage = () => {
           <div className="fixed bottom-20 md:bottom-4 right-4 bg-white rounded-lg shadow-lg border p-4 z-30">
             <h3 className="font-semibold text-primary mb-2">Cart Summary</h3>
             <p className="text-sm text-gray-600 mb-3">
-              {getTotalItems()} items - $
-              {cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}
+              {getTotalItems()} items - {cart.reduce((total, item) => total + (item.price * item.quantity), 0)} ETB
             </p>
             <button 
               onClick={handleCheckout}

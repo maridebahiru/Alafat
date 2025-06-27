@@ -2,13 +2,17 @@
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import SongCard from '../components/SongCard';
-import { getSongs, Song } from '../services/firebaseService';
+import { getSongs } from '../services/songService';
+import { Song } from '../services/types';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
+import { Search } from 'lucide-react';
 
 const SongsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [songs, setSongs] = useState<Song[]>([]);
+  const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const { isPlaying, currentSong, playAudio } = useAudioPlayer();
   const songsPerPage = 6;
 
@@ -17,14 +21,29 @@ const SongsPage = () => {
       setLoading(true);
       const fetchedSongs = await getSongs();
       setSongs(fetchedSongs);
+      setFilteredSongs(fetchedSongs);
       setLoading(false);
     };
 
     fetchSongs();
   }, []);
 
-  const totalPages = Math.ceil(songs.length / songsPerPage);
-  const currentSongs = songs.slice(
+  useEffect(() => {
+    let filtered = songs;
+    
+    if (searchTerm) {
+      filtered = songs.filter(song => 
+        song.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        song.artist.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    setFilteredSongs(filtered);
+    setCurrentPage(1);
+  }, [songs, searchTerm]);
+
+  const totalPages = Math.ceil(filteredSongs.length / songsPerPage);
+  const currentSongs = filteredSongs.slice(
     (currentPage - 1) * songsPerPage,
     currentPage * songsPerPage
   );
@@ -53,6 +72,20 @@ const SongsPage = () => {
           <p className="text-gray-600 text-sm sm:text-base">Listen to our collection of Ethiopian Orthodox Christian music</p>
         </div>
 
+        {/* Search */}
+        <div className="mb-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search songs or artists..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
           {currentSongs.map((song) => (
             <SongCard
@@ -63,6 +96,13 @@ const SongsPage = () => {
             />
           ))}
         </div>
+
+        {/* No songs message */}
+        {filteredSongs.length === 0 && !loading && (
+          <div className="text-center py-8">
+            <p className="text-gray-600">No songs found for your search criteria.</p>
+          </div>
+        )}
 
         {/* Pagination */}
         {totalPages > 1 && (

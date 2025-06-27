@@ -1,11 +1,14 @@
 
 import { useState, useEffect } from 'react';
 import { Play, Pause } from 'lucide-react';
-import { getSongs, Song } from '../services/firebaseService';
+import { getSongs } from '../services/songService';
+import { Song } from '../services/types';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import LyricsPopup from './LyricsPopup';
+import { useAuth } from '../contexts/AuthContext';
 
 const FeaturedSongs = () => {
+  const { userProfile } = useAuth();
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
   const [showLyrics, setShowLyrics] = useState<string | null>(null);
@@ -14,13 +17,13 @@ const FeaturedSongs = () => {
   useEffect(() => {
     const fetchSongs = async () => {
       setLoading(true);
-      const fetchedSongs = await getSongs();
+      const fetchedSongs = await getSongs(userProfile?.location);
       setSongs(fetchedSongs.slice(0, 5));
       setLoading(false);
     };
 
     fetchSongs();
-  }, []);
+  }, [userProfile?.location]);
 
   const togglePlay = (songId: string, audioUrl?: string) => {
     playAudio(songId, audioUrl);
