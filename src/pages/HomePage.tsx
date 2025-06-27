@@ -52,7 +52,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Promotion Carousel */}
+        {/* Promotion Carousel - External Ads */}
         <section>
           <PromotionCarousel />
         </section>
