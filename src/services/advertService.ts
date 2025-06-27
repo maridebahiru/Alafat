@@ -1,25 +1,16 @@
 
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Advert } from './types';
 
 export const getInternalAdverts = async (location?: 'AA' | 'DD'): Promise<Advert[]> => {
   try {
-    let q;
-    if (location) {
-      q = query(
-        collection(db, 'adverts'), 
-        where('type', '==', 'internal'),
-        where('active', '==', true),
-        where('location', 'in', [location, 'both'])
-      );
-    } else {
-      q = query(
-        collection(db, 'adverts'), 
-        where('type', '==', 'internal'),
-        where('active', '==', true)
-      );
-    }
+    const q = query(
+      collection(db, 'adverts'), 
+      where('isActive', '==', true),
+      where('isExternal', '==', false),
+      orderBy('order', 'asc')
+    );
     
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => {
@@ -31,7 +22,8 @@ export const getInternalAdverts = async (location?: 'AA' | 'DD'): Promise<Advert
         link: data?.link,
         type: 'internal',
         location: data?.location || 'both',
-        active: data?.active !== false
+        active: data?.isActive !== false,
+        order: data?.order || 0
       } as Advert;
     });
   } catch (error) {
@@ -42,21 +34,12 @@ export const getInternalAdverts = async (location?: 'AA' | 'DD'): Promise<Advert
 
 export const getExternalAdverts = async (location?: 'AA' | 'DD'): Promise<Advert[]> => {
   try {
-    let q;
-    if (location) {
-      q = query(
-        collection(db, 'adverts'), 
-        where('type', '==', 'external'),
-        where('active', '==', true),
-        where('location', 'in', [location, 'both'])
-      );
-    } else {
-      q = query(
-        collection(db, 'adverts'), 
-        where('type', '==', 'external'),
-        where('active', '==', true)
-      );
-    }
+    const q = query(
+      collection(db, 'adverts'), 
+      where('isActive', '==', true),
+      where('isExternal', '==', true),
+      orderBy('order', 'asc')
+    );
     
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => {
@@ -68,7 +51,8 @@ export const getExternalAdverts = async (location?: 'AA' | 'DD'): Promise<Advert
         link: data?.link,
         type: 'external',
         location: data?.location || 'both',
-        active: data?.active !== false
+        active: data?.isActive !== false,
+        order: data?.order || 0
       } as Advert;
     });
   } catch (error) {

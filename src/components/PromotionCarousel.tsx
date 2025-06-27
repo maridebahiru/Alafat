@@ -14,6 +14,7 @@ const PromotionCarousel = () => {
       setLoading(true);
       try {
         const externalAdverts = await getExternalAdverts(userProfile?.location);
+        console.log('Fetched external adverts:', externalAdverts);
         setAdverts(externalAdverts);
       } catch (error) {
         console.error('Error loading external adverts:', error);

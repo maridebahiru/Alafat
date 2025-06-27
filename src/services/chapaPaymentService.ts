@@ -28,6 +28,8 @@ const CHAPA_API_URL = 'https://api.chapa.co/v1/transaction/initialize';
 
 export const initializeChapaPayment = async (paymentData: ChapaPaymentData): Promise<string> => {
   try {
+    console.log('Initializing Chapa payment with data:', paymentData);
+    
     const response = await fetch(CHAPA_API_URL, {
       method: 'POST',
       headers: {
@@ -37,16 +39,23 @@ export const initializeChapaPayment = async (paymentData: ChapaPaymentData): Pro
       body: JSON.stringify(paymentData),
     });
 
+    console.log('Chapa API response status:', response.status);
+    
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Chapa API error response:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
     }
 
     const result: ChapaResponse = await response.json();
+    console.log('Chapa API result:', result);
     
-    if (result.status === 'success') {
+    if (result.status === 'success' && result.data?.checkout_url) {
       return result.data.checkout_url;
     } else {
-      throw new Error(result.message || 'Failed to initialize payment');
+      console.error('Chapa payment failed:', result.message);
+      // Fallback to the provided donation link
+      return 'https://chapa.link/donation/view/DN-0o9OTSRq98uP';
     }
   } catch (error) {
     console.error('Chapa payment initialization error:', error);
