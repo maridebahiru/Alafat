@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import SongCard from '../components/SongCard';
@@ -48,11 +49,11 @@ const SongsPage = () => {
     <Layout>
       <div className="container mx-auto px-4 py-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-primary mb-2">Sacred Songs</h1>
-          <p className="text-gray-600">Listen to our collection of Ethiopian Orthodox Christian music</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">Sacred Songs</h1>
+          <p className="text-gray-600 text-sm sm:text-base">Listen to our collection of Ethiopian Orthodox Christian music</p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
           {currentSongs.map((song) => (
             <SongCard
               key={song.id}
@@ -65,11 +66,11 @@ const SongsPage = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center space-x-2">
+          <div className="flex justify-center space-x-2 flex-wrap">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 transition-colors"
+              className="px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 transition-colors text-sm sm:text-base"
             >
               Previous
             </button>
@@ -78,7 +79,7 @@ const SongsPage = () => {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-4 py-2 rounded-md transition-colors ${
+                className={`px-3 sm:px-4 py-2 rounded-md transition-colors text-sm sm:text-base ${
                   currentPage === page
                     ? 'bg-primary text-white'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -91,7 +92,7 @@ const SongsPage = () => {
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 transition-colors"
+              className="px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 transition-colors text-sm sm:text-base"
             >
               Next
             </button>

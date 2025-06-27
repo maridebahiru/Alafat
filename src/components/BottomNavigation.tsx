@@ -1,6 +1,6 @@
 
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Play, ShoppingBag, Heart } from 'lucide-react';
+import { Home, Play, ShoppingBag, User } from 'lucide-react';
 
 const BottomNavigation = () => {
   const location = useLocation();
@@ -9,7 +9,7 @@ const BottomNavigation = () => {
     { name: 'Home', href: '/', icon: Home },
     { name: 'Songs', href: '/songs', icon: Play },
     { name: 'Shop', href: '/shop', icon: ShoppingBag },
-    { name: 'Donate', href: '/donate', icon: Heart },
+    { name: 'Profile', href: '/profile', icon: User },
   ];
 
   const isActive = (href: string) => {

@@ -12,6 +12,7 @@ import AboutPage from "./pages/AboutPage";
 import SongsPage from "./pages/SongsPage";
 import ShopPage from "./pages/ShopPage";
 import DonatePage from "./pages/DonatePage";
+import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
               <Route path="/songs" element={<SongsPage />} />
               <Route path="/shop" element={<ShopPage />} />
               <Route path="/donate" element={<DonatePage />} />
+              <Route path="/profile" element={<ProfilePage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </RouteGuard>

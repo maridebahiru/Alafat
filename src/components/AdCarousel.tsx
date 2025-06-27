@@ -2,17 +2,19 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { getInternalAdverts, Advert } from '../services/firebaseService';
+import { useAuth } from '../contexts/AuthContext';
 
 const AdCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [adverts, setAdverts] = useState<Advert[]>([]);
   const [loading, setLoading] = useState(true);
+  const { userProfile } = useAuth();
 
   useEffect(() => {
     const fetchAdverts = async () => {
       setLoading(true);
       try {
-        const internalAdverts = await getInternalAdverts();
+        const internalAdverts = await getInternalAdverts(userProfile?.location);
         setAdverts(internalAdverts);
       } catch (error) {
         console.error('Error loading internal adverts:', error);
@@ -22,7 +24,7 @@ const AdCarousel = () => {
     };
 
     fetchAdverts();
-  }, []);
+  }, [userProfile?.location]);
 
   useEffect(() => {
     if (adverts.length > 1) {
@@ -50,7 +52,7 @@ const AdCarousel = () => {
 
   if (loading) {
     return (
-      <div className="w-full h-48 md:h-64 rounded-lg bg-gray-200 animate-pulse flex items-center justify-center">
+      <div className="w-full h-48 sm:h-56 md:h-64 lg:h-72 rounded-lg bg-gray-200 animate-pulse flex items-center justify-center">
         <span className="text-gray-500">Loading...</span>
       </div>
     );
@@ -58,17 +60,17 @@ const AdCarousel = () => {
 
   if (adverts.length === 0) {
     return (
-      <div className="w-full h-48 md:h-64 rounded-lg bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center text-white">
-        <div className="text-center">
-          <h3 className="text-xl md:text-2xl font-bold mb-2">Welcome to Alafat</h3>
-          <p className="text-sm md:text-base opacity-90">Your spiritual journey starts here</p>
+      <div className="w-full h-48 sm:h-56 md:h-64 lg:h-72 rounded-lg bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center text-white">
+        <div className="text-center px-4">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">Welcome to Alafat</h3>
+          <p className="text-sm sm:text-base md:text-lg opacity-90">Your spiritual journey starts here</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full h-48 md:h-64 rounded-lg overflow-hidden shadow-lg">
+    <div className="relative w-full h-48 sm:h-56 md:h-64 lg:h-72 rounded-lg overflow-hidden shadow-lg">
       <div 
         className="flex transition-transform duration-300 ease-in-out h-full"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
