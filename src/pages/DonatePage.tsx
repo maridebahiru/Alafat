@@ -71,7 +71,7 @@ const DonatePage = () => {
         email: userProfile.email,
         first_name: userProfile?.fullName?.split(' ')[0] || 'Anonymous',
         last_name: userProfile?.fullName?.split(' ').slice(1).join(' ') || 'Donor',
-        phone_number: userProfile?.phone || undefined,
+        phone_number: userProfile?.phoneNumber || undefined,
         tx_ref: txRef,
         callback_url: `${window.location.origin}/donation-callback`,
         return_url: `${window.location.origin}/donation-success`,
