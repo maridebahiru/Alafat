@@ -1,11 +1,13 @@
 
 import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { currentUser, logout } = useAuth();
 
   const navItems = [
     { path: '/', label: 'Home' },
@@ -16,6 +18,14 @@ const Header = () => {
   ];
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
 
   return (
     <header className="bg-[#3c1012] shadow-md sticky top-0 z-40">
@@ -46,6 +56,15 @@ const Header = () => {
                 {item.label}
               </Link>
             ))}
+            {currentUser && (
+              <button
+                onClick={handleLogout}
+                className="flex items-center space-x-1 text-white hover:text-[#b37e10] font-medium transition-colors"
+              >
+                <LogOut size={16} />
+                <span>Logout</span>
+              </button>
+            )}
           </nav>
 
           {/* Mobile menu button */}
@@ -75,6 +94,18 @@ const Header = () => {
                   {item.label}
                 </Link>
               ))}
+              {currentUser && (
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex items-center space-x-1 text-white hover:text-[#b37e10] font-medium transition-colors text-left"
+                >
+                  <LogOut size={16} />
+                  <span>Logout</span>
+                </button>
+              )}
             </nav>
           </div>
         )}
