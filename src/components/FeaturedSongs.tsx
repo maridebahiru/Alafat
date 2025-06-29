@@ -1,14 +1,11 @@
-
 import { useState, useEffect } from 'react';
 import { Play, Pause } from 'lucide-react';
 import { getSongs } from '../services/songService';
 import { Song } from '../services/types';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import LyricsPopup from './LyricsPopup';
-import { useAuth } from '../contexts/AuthContext';
 
 const FeaturedSongs = () => {
-  const { userProfile } = useAuth();
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
   const [showLyrics, setShowLyrics] = useState<string | null>(null);
@@ -18,7 +15,7 @@ const FeaturedSongs = () => {
     const fetchSongs = async () => {
       setLoading(true);
       try {
-        const fetchedSongs = await getSongs(userProfile?.location);
+        const fetchedSongs = await getSongs();
         setSongs(fetchedSongs.slice(0, 5));
       } catch (error) {
         console.error('Error fetching songs:', error);
@@ -28,7 +25,7 @@ const FeaturedSongs = () => {
     };
 
     fetchSongs();
-  }, [userProfile?.location]);
+  }, []);
 
   const togglePlay = (songId: string, audioUrl?: string) => {
     playAudio(songId, audioUrl);
@@ -50,7 +47,7 @@ const FeaturedSongs = () => {
     return (
       <div className="space-y-4">
         <h3 className="text-xl font-semibold text-primary">Featured Songs</h3>
-        <p className="text-gray-600">No songs available for your location.</p>
+        <p className="text-gray-600">No songs available.</p>
       </div>
     );
   }
