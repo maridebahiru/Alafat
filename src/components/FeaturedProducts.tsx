@@ -18,6 +18,7 @@ const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
+        // Only fetch products for user's location or 'both'
         const fetchedProducts = await getProducts(userProfile?.location);
         setProducts(fetchedProducts.slice(0, 5));
       } catch (error) {
