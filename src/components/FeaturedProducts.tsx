@@ -17,15 +17,17 @@ const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      const fetchedProducts = await getProducts(userProfile?.location);
-      // Take only first 5 products for featured section
-      setProducts(fetchedProducts.slice(0, 5));
+      try {
+        const fetchedProducts = await getProducts(userProfile?.location);
+        setProducts(fetchedProducts.slice(0, 5));
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setProducts([]);
+      }
       setLoading(false);
     };
 
-    if (userProfile?.location) {
-      fetchProducts();
-    }
+    fetchProducts();
   }, [userProfile?.location]);
 
   const handleAddToCart = (product: Product) => {
@@ -40,6 +42,15 @@ const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
       <div className="space-y-4">
         <h3 className="text-xl font-semibold text-primary">Featured Products</h3>
         <p className="text-gray-600">Loading products...</p>
+      </div>
+    );
+  }
+
+  if (products.length === 0) {
+    return (
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold text-primary">Featured Products</h3>
+        <p className="text-gray-600">No products available for your location.</p>
       </div>
     );
   }

@@ -17,8 +17,13 @@ const FeaturedSongs = () => {
   useEffect(() => {
     const fetchSongs = async () => {
       setLoading(true);
-      const fetchedSongs = await getSongs(userProfile?.location);
-      setSongs(fetchedSongs.slice(0, 5));
+      try {
+        const fetchedSongs = await getSongs(userProfile?.location);
+        setSongs(fetchedSongs.slice(0, 5));
+      } catch (error) {
+        console.error('Error fetching songs:', error);
+        setSongs([]);
+      }
       setLoading(false);
     };
 
@@ -37,6 +42,15 @@ const FeaturedSongs = () => {
       <div className="space-y-4">
         <h3 className="text-xl font-semibold text-primary">Featured Songs</h3>
         <p className="text-gray-600">Loading songs...</p>
+      </div>
+    );
+  }
+
+  if (songs.length === 0) {
+    return (
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold text-primary">Featured Songs</h3>
+        <p className="text-gray-600">No songs available for your location.</p>
       </div>
     );
   }

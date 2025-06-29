@@ -80,7 +80,7 @@ const ProfilePage = () => {
         <div 
           className="relative h-32 sm:h-40 md:h-48 bg-gradient-to-r from-primary to-primary/80"
           style={{
-            backgroundImage: `linear-gradient(rgba(60, 16, 18, 0.8), rgba(60, 16, 18, 0.8)), url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=400&fit=crop')`,
+            backgroundImage: `linear-gradient(rgba(60, 16, 18, 0.6), rgba(60, 16, 18, 0.6)), url('/lovable-uploads/ba20a4a5-84df-4981-acf0-cae01c447072.png')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center'
           }}
