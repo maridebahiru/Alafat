@@ -1,14 +1,22 @@
 
 import Layout from '../components/Layout';
+import GoogleMap from '../components/GoogleMap';
 import { Users, Heart, Music, BookOpen } from 'lucide-react';
 
 const AboutPage = () => {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-6">
-        {/* Hero Section */}
-        <section className="bg-gradient-to-r from-primary to-primary/80 text-white rounded-lg p-8 mb-8">
-          <div className="text-center">
+        {/* Hero Section with Banner Background */}
+        <section 
+          className="bg-gradient-to-r from-primary to-primary/80 text-white rounded-lg p-8 mb-8 relative overflow-hidden"
+          style={{
+            backgroundImage: `linear-gradient(rgba(60, 16, 18, 0.8), rgba(60, 16, 18, 0.8)), url('/lovable-uploads/ba20a4a5-84df-4981-acf0-cae01c447072.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        >
+          <div className="text-center relative z-10">
             <h1 className="text-3xl md:text-4xl font-bold mb-4">About Alafat Registration</h1>
             <p className="text-lg md:text-xl text-secondary opacity-90 max-w-3xl mx-auto">
               A vibrant Ethiopian Orthodox Christian community dedicated to preserving our faith, 
@@ -35,6 +43,17 @@ const AboutPage = () => {
               cultural awareness, and social responsibility. We envision a future where our 
               traditions continue to inspire and guide generations to come.
             </p>
+          </div>
+        </section>
+
+        {/* Our Locations Map */}
+        <section className="mb-12">
+          <h2 className="text-3xl font-bold text-primary text-center mb-8">Our Locations</h2>
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <p className="text-gray-600 mb-6 text-center">
+              We serve communities in Addis Ababa and Dire Dawa, bringing our services closer to you.
+            </p>
+            <GoogleMap />
           </div>
         </section>
 

@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, MapPin } from 'lucide-react';
 import { getProducts } from '../services/productService';
 import { Product } from '../services/types';
 import { useAuth } from '../contexts/AuthContext';
@@ -35,6 +35,19 @@ const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
       onAddToCart(product);
     }
     console.log('Product added to cart:', product);
+  };
+
+  const getLocationDisplay = (location: string) => {
+    switch (location) {
+      case 'DD':
+        return 'Dire Dawa';
+      case 'AA':
+        return 'Addis Ababa';
+      case 'both':
+        return 'All Locations';
+      default:
+        return location;
+    }
   };
 
   if (loading) {
@@ -74,7 +87,13 @@ const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
                 className="w-full h-32 object-cover"
               />
               <div className="p-4">
-                <h4 className="font-semibold text-gray-900 mb-1 truncate">{product.name}</h4>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-semibold text-gray-900 truncate flex-1">{product.name}</h4>
+                  <div className="flex items-center text-xs text-gray-500 ml-2">
+                    <MapPin size={12} className="mr-1" />
+                    <span>{getLocationDisplay(product.location)}</span>
+                  </div>
+                </div>
                 <p className="text-secondary-dark font-bold text-lg mb-3">
                   {product.price} Ethiopian Birr
                 </p>
