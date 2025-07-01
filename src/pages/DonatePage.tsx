@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+
+import { useState } from 'react';
 import Layout from '../components/Layout';
-import { Heart, CreditCard, DollarSign, User } from 'lucide-react';
+import { Heart, CreditCard, DollarSign } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { createDonation, getDonationOptions } from '../services/firebaseService';
+import { createDonation } from '../services/firebaseService';
 import { initializeChapaPayment, generateTransactionReference } from '../services/chapaPaymentService';
 
 const DonatePage = () => {
@@ -13,20 +14,6 @@ const DonatePage = () => {
     message: ''
   });
   const [loading, setLoading] = useState(false);
-  const [donationOptions, setDonationOptions] = useState<any[]>([]);
-
-  const presetAmounts = [25, 50, 100, 250, 500];
-
-  useEffect(() => {
-    const fetchDonationOptions = async () => {
-      if (userProfile?.location) {
-        const options = await getDonationOptions(userProfile.location);
-        setDonationOptions(options);
-      }
-    };
-
-    fetchDonationOptions();
-  }, [userProfile?.location]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +78,7 @@ const DonatePage = () => {
       window.location.href = checkoutUrl;
     } catch (error) {
       console.error('Error processing donation:', error);
-      alert('Error processing donation. Please try again or use the direct donation link.');
+      alert('Error processing donation. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -101,71 +88,14 @@ const DonatePage = () => {
     <Layout>
       <div className="container mx-auto px-4 py-6">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-r from-primary to-secondary-dark rounded-full flex items-center justify-center mx-auto mb-4">
             <Heart className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-primary mb-4">Support Alafat Registration</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Your generous donations help us continue our mission of faith, community service, 
-            and preserving Ethiopian Orthodox Christian traditions for location: {userProfile?.location}
-          </p>
+          <h1 className="text-3xl font-bold text-primary mb-4">Make a Donation</h1>
         </div>
 
-        <div className="max-w-2xl mx-auto">
-          {/* User Status */}
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-            <div className="flex items-center space-x-2">
-              <User className="w-5 h-5 text-primary" />
-              <div>
-                <span className="text-gray-700">Welcome, {userProfile?.fullName}</span>
-                <div className="text-sm text-gray-500">Location: {userProfile?.location}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Available Donation Options */}
-          {donationOptions.length > 0 && (
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold text-primary mb-4">Available for your location:</h3>
-              <div className="grid gap-4">
-                {donationOptions.map((option) => (
-                  <div key={option.id} className="p-4 bg-white rounded-lg shadow-md border">
-                    <h4 className="font-semibold text-gray-900">{option.title}</h4>
-                    <p className="text-sm text-gray-600">{option.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Impact Section */}
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <div className="text-center p-6 bg-white rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-3">
-                <span className="text-primary font-bold text-xl">📚</span>
-              </div>
-              <h3 className="font-semibold text-primary mb-2">Education</h3>
-              <p className="text-sm text-gray-600">Supporting religious education and cultural preservation</p>
-            </div>
-            
-            <div className="text-center p-6 bg-white rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-3">
-                <span className="text-primary font-bold text-xl">🤝</span>
-              </div>
-              <h3 className="font-semibold text-primary mb-2">Community</h3>
-              <p className="text-sm text-gray-600">Building stronger communities through faith and service</p>
-            </div>
-            
-            <div className="text-center p-6 bg-white rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center mx-auto mb-3">
-                <span className="text-primary font-bold text-xl">⛪</span>
-              </div>
-              <h3 className="font-semibold text-primary mb-2">Worship</h3>
-              <p className="text-sm text-gray-600">Maintaining sacred spaces and worship traditions</p>
-            </div>
-          </div>
-
+        <div className="max-w-lg mx-auto">
           {/* Donation Form */}
           <div className="bg-white rounded-lg shadow-lg p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -201,34 +131,19 @@ const DonatePage = () => {
               {/* Amount Selection */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Donation Amount
+                  Donation Amount (ETB)
                 </label>
-                <div className="grid grid-cols-3 gap-3 mb-4">
-                  {presetAmounts.map((amount) => (
-                    <button
-                      key={amount}
-                      type="button"
-                      onClick={() => setDonationAmount(amount)}
-                      className={`p-3 rounded-lg border-2 transition-colors ${
-                        donationAmount === amount
-                          ? 'border-primary bg-primary text-white'
-                          : 'border-gray-300 text-gray-700 hover:border-primary'
-                      }`}
-                    >
-                      ${amount}
-                    </button>
-                  ))}
-                </div>
                 <div className="relative">
                   <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
                     type="number"
-                    placeholder="Enter custom amount"
+                    placeholder="Enter amount in Ethiopian Birr"
                     value={donationAmount}
                     onChange={(e) => setDonationAmount(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     min="1"
                     step="0.01"
+                    required
                   />
                 </div>
               </div>
@@ -242,7 +157,7 @@ const DonatePage = () => {
                   rows={3}
                   value={donorInfo.message}
                   onChange={(e) => setDonorInfo({...donorInfo, message: e.target.value})}
-                  placeholder="Share why you're supporting Alafat Registration..."
+                  placeholder="Share why you're supporting us..."
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
@@ -262,7 +177,7 @@ const DonatePage = () => {
 
             <div className="mt-6 p-4 bg-gray-50 rounded-lg">
               <p className="text-sm text-gray-600 text-center">
-                🔒 Secure payment processing through CHAPA. Your donation is tax-deductible.
+                🔒 Secure payment processing through CHAPA.
               </p>
             </div>
           </div>
