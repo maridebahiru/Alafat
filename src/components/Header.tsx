@@ -3,18 +3,21 @@ import { useState } from 'react';
 import { Menu, X, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { currentUser, logout } = useAuth();
+  const { t } = useLanguage();
 
   const navItems = [
-    { path: '/', label: 'Home' },
-    { path: '/about', label: 'About' },
-    { path: '/songs', label: 'Songs' },
-    { path: '/shop', label: 'Shop' },
-    { path: '/donate', label: 'Donate' },
+    { path: '/', label: t('nav.home') },
+    { path: '/about', label: t('nav.about') },
+    { path: '/songs', label: t('nav.songs') },
+    { path: '/shop', label: t('nav.shop') },
+    { path: '/donate', label: t('nav.donate') },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -35,10 +38,9 @@ const Header = () => {
           <Link to="/" className="flex items-center space-x-2">
             <img 
               src="/lovable-uploads/aab69517-55fa-435c-bf9a-110721c35cf2.png" 
-              alt="Alafat Registration Logo" 
+              alt="Logo" 
               className="w-10 h-10 object-contain"
             />
-            <span className="text-xl font-bold text-[#b37e10]">Alafat Registration</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -56,6 +58,7 @@ const Header = () => {
                 {item.label}
               </Link>
             ))}
+            <LanguageSwitcher />
             {currentUser && (
               <button
                 onClick={handleLogout}
@@ -94,6 +97,9 @@ const Header = () => {
                   {item.label}
                 </Link>
               ))}
+              <div className="pt-2">
+                <LanguageSwitcher />
+              </div>
               {currentUser && (
                 <button
                   onClick={() => {
