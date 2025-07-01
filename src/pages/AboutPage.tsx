@@ -1,9 +1,11 @@
 
 import Layout from '../components/Layout';
 import GoogleMap from '../components/GoogleMap';
-import { Users, Heart, Music, BookOpen } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const AboutPage = () => {
+  const { t } = useLanguage();
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-6">
@@ -17,7 +19,7 @@ const AboutPage = () => {
           }}
         >
           <div className="text-center relative z-10">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">About Alafat Registration</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">{t('nav.about')}</h1>
             <p className="text-lg md:text-xl text-secondary opacity-90 max-w-3xl mx-auto">
               A vibrant Ethiopian Orthodox Christian community dedicated to preserving our faith, 
               culture, and traditions through music, fellowship, and service.
@@ -46,59 +48,34 @@ const AboutPage = () => {
           </div>
         </section>
 
-        {/* Our Locations Map */}
+        {/* Our Location */}
         <section className="mb-12">
-          <h2 className="text-3xl font-bold text-primary text-center mb-8">Our Locations</h2>
+          <h2 className="text-3xl font-bold text-primary text-center mb-8">Our Location</h2>
           <div className="bg-white rounded-lg shadow-md p-6">
             <p className="text-gray-600 mb-6 text-center">
-              We serve communities in Addis Ababa and Dire Dawa, bringing our services closer to you.
+              Visit us at our location in Addis Ababa.
             </p>
-            <GoogleMap />
-          </div>
-        </section>
-
-        {/* What We Do */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold text-primary text-center mb-8">What We Do</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white rounded-lg shadow-md p-6 text-center">
-              <div className="bg-secondary p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <Music size={32} className="text-primary" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Sacred Music</h3>
-              <p className="text-gray-600 text-sm">
-                Preserving and sharing traditional Ethiopian Orthodox chants and hymns
-              </p>
+            <div className="aspect-video w-full">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3940.8543!2d38.7578!3d9.0192!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x164b859b7c3c8f3d%3A0x8b5f5f5f5f5f5f5f!2sAddis%20Ababa%2C%20Ethiopia!5e0!3m2!1sen!2sus!4v1234567890123"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="rounded-lg"
+              ></iframe>
             </div>
-
-            <div className="bg-white rounded-lg shadow-md p-6 text-center">
-              <div className="bg-secondary p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <Users size={32} className="text-primary" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Community</h3>
-              <p className="text-gray-600 text-sm">
-                Building strong connections among Ethiopian Orthodox believers
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-md p-6 text-center">
-              <div className="bg-secondary p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <BookOpen size={32} className="text-primary" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Education</h3>
-              <p className="text-gray-600 text-sm">
-                Teaching Orthodox traditions, language, and cultural values
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-md p-6 text-center">
-              <div className="bg-secondary p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <Heart size={32} className="text-primary" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Service</h3>
-              <p className="text-gray-600 text-sm">
-                Supporting our community through charitable works and outreach
-              </p>
+            <div className="mt-4 text-center">
+              <a
+                href="https://maps.app.goo.gl/WhVZsjJbd1BmKovQ8"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                View on Google Maps
+              </a>
             </div>
           </div>
         </section>
@@ -108,7 +85,7 @@ const AboutPage = () => {
           <h2 className="text-3xl font-bold text-primary text-center mb-6">Our Story</h2>
           <div className="max-w-4xl mx-auto text-gray-600 leading-relaxed space-y-4">
             <p>
-              Alafat Registration was founded with a deep commitment to preserving and celebrating 
+              Our organization was founded with a deep commitment to preserving and celebrating 
               the rich traditions of the Ethiopian Orthodox Church. Our journey began with a simple 
               vision: to create a space where faith, culture, and community could flourish together.
             </p>

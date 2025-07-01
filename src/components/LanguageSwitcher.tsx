@@ -1,36 +1,38 @@
 
 import { Globe } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 
 const LanguageSwitcher = () => {
   const { language, setLanguage } = useLanguage();
 
   return (
-    <div className="flex items-center space-x-2">
-      <Globe className="w-4 h-4 text-gray-600" />
-      <div className="flex bg-gray-100 rounded-md p-1">
-        <button
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="flex items-center space-x-2 text-white hover:text-[#b37e10] transition-colors">
+          <Globe className="w-5 h-5" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-32">
+        <DropdownMenuItem
           onClick={() => setLanguage('en')}
-          className={`px-2 py-1 text-xs rounded ${
-            language === 'en'
-              ? 'bg-white text-primary shadow-sm'
-              : 'text-gray-600 hover:text-primary'
-          }`}
+          className={`cursor-pointer ${language === 'en' ? 'bg-primary/10' : ''}`}
         >
-          EN
-        </button>
-        <button
+          English
+        </DropdownMenuItem>
+        <DropdownMenuItem
           onClick={() => setLanguage('am')}
-          className={`px-2 py-1 text-xs rounded ${
-            language === 'am'
-              ? 'bg-white text-primary shadow-sm'
-              : 'text-gray-600 hover:text-primary'
-          }`}
+          className={`cursor-pointer ${language === 'am' ? 'bg-primary/10' : ''}`}
         >
-          አማ
-        </button>
-      </div>
-    </div>
+          አማርኛ
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
