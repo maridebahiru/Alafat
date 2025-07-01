@@ -1,13 +1,13 @@
 
 import { useState } from 'react';
 import Layout from '../components/Layout';
-import { Heart, CreditCard, DollarSign } from 'lucide-react';
+import { Heart, DollarSign } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { createDonation } from '../services/firebaseService';
-import { initializeChapaPayment, generateTransactionReference } from '../services/chapaPaymentService';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const DonatePage = () => {
   const { currentUser, userProfile } = useAuth();
+  const { t } = useLanguage();
   const [donationAmount, setDonationAmount] = useState<number | string>('');
   const [donationType, setDonationType] = useState<'one-time' | 'monthly'>('one-time');
   const [donorInfo, setDonorInfo] = useState({
@@ -31,51 +31,12 @@ const DonatePage = () => {
     setLoading(true);
 
     try {
-      // Generate transaction reference
-      const txRef = generateTransactionReference('DON');
-      console.log('Generated transaction reference:', txRef);
+      // For now, just show a success message
+      alert('Thank you for your donation! Payment processing will be available soon.');
       
-      // Create donation record in Firebase
-      const donationId = await createDonation({
-        userId: currentUser?.uid,
-        amount: Number(donationAmount),
-        currency: 'ETB',
-        donationType,
-        donorName: userProfile?.fullName || '',
-        donorEmail: userProfile?.email || '',
-        message: donorInfo.message,
-        status: 'pending',
-        chapaReference: txRef,
-        location: userProfile?.location || 'AA'
-      });
-
-      console.log('Donation created with ID:', donationId);
-      
-      // Prepare payment data
-      const paymentData = {
-        amount: Number(donationAmount),
-        currency: 'ETB',
-        email: userProfile.email,
-        first_name: userProfile?.fullName?.split(' ')[0] || 'Anonymous',
-        last_name: userProfile?.fullName?.split(' ').slice(1).join(' ') || 'Donor',
-        phone_number: userProfile?.phoneNumber || undefined,
-        tx_ref: txRef,
-        callback_url: `${window.location.origin}/donation-callback`,
-        return_url: `${window.location.origin}/donation-success`,
-        customization: {
-          title: 'Alafat Registration Donation',
-          description: donorInfo.message || 'Supporting Alafat Registration'
-        }
-      };
-
-      console.log('Payment data prepared:', paymentData);
-      
-      // Initialize Chapa payment
-      const checkoutUrl = await initializeChapaPayment(paymentData);
-      console.log('Chapa checkout URL:', checkoutUrl);
-
-      // Redirect to Chapa checkout
-      window.location.href = checkoutUrl;
+      // Reset form
+      setDonationAmount('');
+      setDonorInfo({ message: '' });
     } catch (error) {
       console.error('Error processing donation:', error);
       alert('Error processing donation. Please try again.');
@@ -92,7 +53,7 @@ const DonatePage = () => {
           <div className="w-16 h-16 bg-gradient-to-r from-primary to-secondary-dark rounded-full flex items-center justify-center mx-auto mb-4">
             <Heart className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-primary mb-4">Make a Donation</h1>
+          <h1 className="text-3xl font-bold text-primary mb-4">{t('donate.title')}</h1>
         </div>
 
         <div className="max-w-lg mx-auto">
@@ -101,7 +62,7 @@ const DonatePage = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Donation Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Donation Type</label>
+                <label className="block text-sm font-medium text-gray-700 mb-3">{t('donate.donationType')}</label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
@@ -112,7 +73,7 @@ const DonatePage = () => {
                         : 'border-gray-300 text-gray-700 hover:border-primary'
                     }`}
                   >
-                    One-time Gift
+                    {t('donate.oneTime')}
                   </button>
                   <button
                     type="button"
@@ -123,7 +84,7 @@ const DonatePage = () => {
                         : 'border-gray-300 text-gray-700 hover:border-primary'
                     }`}
                   >
-                    Monthly Giving
+                    {t('donate.monthly')}
                   </button>
                 </div>
               </div>
@@ -131,13 +92,13 @@ const DonatePage = () => {
               {/* Amount Selection */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Donation Amount (ETB)
+                  {t('donate.amount')}
                 </label>
                 <div className="relative">
                   <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
                     type="number"
-                    placeholder="Enter amount in Ethiopian Birr"
+                    placeholder={t('donate.amountPlaceholder')}
                     value={donationAmount}
                     onChange={(e) => setDonationAmount(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -151,13 +112,13 @@ const DonatePage = () => {
               {/* Message */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Message (Optional)
+                  {t('donate.message')}
                 </label>
                 <textarea
                   rows={3}
                   value={donorInfo.message}
                   onChange={(e) => setDonorInfo({...donorInfo, message: e.target.value})}
-                  placeholder="Share why you're supporting us..."
+                  placeholder={t('donate.messagePlaceholder')}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
@@ -166,18 +127,15 @@ const DonatePage = () => {
               <button
                 type="submit"
                 disabled={!donationAmount || loading}
-                className="w-full bg-gradient-to-r from-primary to-secondary-dark hover:from-primary/90 hover:to-secondary-dark/90 text-white py-4 px-6 rounded-lg font-semibold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                className="w-full bg-gradient-to-r from-primary to-secondary-dark hover:from-primary/90 hover:to-secondary-dark/90 text-white py-4 px-6 rounded-lg font-semibold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <CreditCard className="w-5 h-5" />
-                <span>
-                  {loading ? 'Processing...' : 'Donate with Chapa'}
-                </span>
+                {loading ? t('donate.processing') : t('donate.submit')}
               </button>
             </form>
 
             <div className="mt-6 p-4 bg-gray-50 rounded-lg">
               <p className="text-sm text-gray-600 text-center">
-                🔒 Secure payment processing through CHAPA.
+                {t('donate.secure')}
               </p>
             </div>
           </div>

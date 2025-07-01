@@ -6,8 +6,10 @@ import { getSongs } from '../services/songService';
 import { Song } from '../services/types';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { Search } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const SongsPage = () => {
+  const { t } = useLanguage();
   const [currentPage, setCurrentPage] = useState(1);
   const [songs, setSongs] = useState<Song[]>([]);
   const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
@@ -57,7 +59,7 @@ const SongsPage = () => {
       <Layout>
         <div className="container mx-auto px-4 py-6">
           <div className="text-center">
-            <p className="text-gray-600">Loading songs...</p>
+            <p className="text-gray-600">{t('common.loading')}</p>
           </div>
         </div>
       </Layout>
@@ -68,8 +70,8 @@ const SongsPage = () => {
     <Layout>
       <div className="container mx-auto px-4 py-6">
         <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">Sacred Songs</h1>
-          <p className="text-gray-600 text-sm sm:text-base">Listen to our collection of Ethiopian Orthodox Christian music</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">{t('songs.title')}</h1>
+          <p className="text-gray-600 text-sm sm:text-base">{t('songs.description')}</p>
         </div>
 
         {/* Search */}
@@ -78,7 +80,7 @@ const SongsPage = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Search songs or artists..."
+              placeholder={t('songs.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -100,7 +102,7 @@ const SongsPage = () => {
         {/* No songs message */}
         {filteredSongs.length === 0 && !loading && (
           <div className="text-center py-8">
-            <p className="text-gray-600">No songs found for your search criteria.</p>
+            <p className="text-gray-600">{t('songs.noSongs')}</p>
           </div>
         )}
 
@@ -112,7 +114,7 @@ const SongsPage = () => {
               disabled={currentPage === 1}
               className="px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 transition-colors text-sm sm:text-base"
             >
-              Previous
+              {t('common.previous')}
             </button>
             
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -134,7 +136,7 @@ const SongsPage = () => {
               disabled={currentPage === totalPages}
               className="px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 transition-colors text-sm sm:text-base"
             >
-              Next
+              {t('common.next')}
             </button>
           </div>
         )}

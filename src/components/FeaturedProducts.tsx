@@ -4,6 +4,7 @@ import { ShoppingCart, MapPin } from 'lucide-react';
 import { getProducts } from '../services/productService';
 import { Product } from '../services/types';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface FeaturedProductsProps {
   onAddToCart?: (product: Product) => void;
@@ -11,6 +12,7 @@ interface FeaturedProductsProps {
 
 const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
   const { userProfile } = useAuth();
+  const { t } = useLanguage();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,11 +43,11 @@ const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
   const getLocationDisplay = (location: string) => {
     switch (location) {
       case 'DD':
-        return 'Dire Dawa';
+        return t('location.dd');
       case 'AA':
-        return 'Addis Ababa';
+        return t('location.aa');
       case 'both':
-        return 'All Locations';
+        return t('location.both');
       default:
         return location;
     }
@@ -54,8 +56,8 @@ const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
   if (loading) {
     return (
       <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-primary">Featured Products</h3>
-        <p className="text-gray-600">Loading products...</p>
+        <h3 className="text-xl font-semibold text-primary">{t('featured.products')}</h3>
+        <p className="text-gray-600">{t('common.loading')}</p>
       </div>
     );
   }
@@ -63,8 +65,8 @@ const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
   if (products.length === 0) {
     return (
       <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-primary">Featured Products</h3>
-        <p className="text-gray-600">No products available for your location.</p>
+        <h3 className="text-xl font-semibold text-primary">{t('featured.products')}</h3>
+        <p className="text-gray-600">{t('featured.noProducts')}</p>
       </div>
     );
   }
@@ -72,9 +74,9 @@ const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold text-primary">Featured Products</h3>
+        <h3 className="text-xl font-semibold text-primary">{t('featured.products')}</h3>
         <button className="text-secondary-dark hover:text-primary text-sm font-medium">
-          Shop All
+          {t('featured.shopAll')}
         </button>
       </div>
       
@@ -103,7 +105,7 @@ const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
                   className="w-full bg-primary hover:bg-primary/90 text-white py-2 px-3 rounded-md flex items-center justify-center space-x-2 transition-colors text-sm"
                 >
                   <ShoppingCart size={16} />
-                  <span>Add to Cart</span>
+                  <span>{t('common.addToCart')}</span>
                 </button>
               </div>
             </div>

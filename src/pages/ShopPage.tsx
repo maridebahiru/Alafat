@@ -1,13 +1,11 @@
-
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import ProductCard from '../components/ProductCard';
 import { ShoppingCart, Filter, Search } from 'lucide-react';
 import { getProducts } from '../services/productService';
 import { Product } from '../services/types';
-import { initializeChapaPayment, generateTransactionReference } from '../services/chapaPaymentService';
-import { createOrder } from '../services/chapaService';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface CartItem extends Product {
   quantity: number;
@@ -15,6 +13,7 @@ interface CartItem extends Product {
 
 const ShopPage = () => {
   const { userProfile } = useAuth();
+  const { t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -85,57 +84,12 @@ const ShopPage = () => {
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const handleCheckout = async () => {
-    if (cart.length === 0) return;
-
-    try {
-      const txRef = generateTransactionReference('ORD');
-      const totalAmount = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-      
-      const orderId = await createOrder({
-        items: cart.map(item => ({
-          productId: item.id || '',
-          productName: item.name,
-          price: item.price,
-          quantity: item.quantity
-        })),
-        totalAmount,
-        currency: 'ETB',
-        status: 'pending',
-        chapaReference: txRef
-      });
-
-      console.log('Order created:', orderId);
-      
-      const checkoutUrl = await initializeChapaPayment({
-        amount: totalAmount,
-        currency: 'ETB',
-        email: userProfile?.email || 'customer@example.com',
-        first_name: userProfile?.fullName?.split(' ')[0] || 'Customer',
-        last_name: userProfile?.fullName?.split(' ').slice(1).join(' ') || 'Name',
-        phone_number: userProfile?.phoneNumber,
-        tx_ref: txRef,
-        callback_url: `${window.location.origin}/order-callback`,
-        return_url: `${window.location.origin}/order-success`,
-        customization: {
-          title: 'Alafat Registration Shop',
-          description: `Order of ${cart.length} items`
-        }
-      });
-
-      window.location.href = checkoutUrl;
-    } catch (error) {
-      console.error('Error processing checkout:', error);
-      alert('Error processing checkout. Please try again.');
-    }
-  };
-
   if (loading) {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-6">
           <div className="text-center">
-            <p className="text-gray-600">Loading products...</p>
+            <p className="text-gray-600">{t('common.loading')}</p>
           </div>
         </div>
       </Layout>
@@ -148,9 +102,9 @@ const ShopPage = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-primary mb-2">Shop</h1>
+            <h1 className="text-3xl font-bold text-primary mb-2">{t('shop.title')}</h1>
             <p className="text-gray-600">
-              Discover our collection of authentic items
+              {t('shop.description')}
             </p>
           </div>
           <div className="relative">
@@ -169,7 +123,7 @@ const ShopPage = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Search products..."
+              placeholder={t('shop.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -181,7 +135,7 @@ const ShopPage = () => {
         <div className="mb-6">
           <div className="flex items-center space-x-4 mb-4">
             <Filter className="w-5 h-5 text-gray-600" />
-            <span className="font-medium text-gray-700">Filter by category:</span>
+            <span className="font-medium text-gray-700">{t('shop.filterByCategory')}</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
@@ -214,7 +168,7 @@ const ShopPage = () => {
         {/* No products message */}
         {filteredProducts.length === 0 && !loading && (
           <div className="text-center py-8">
-            <p className="text-gray-600">No products found for your search criteria.</p>
+            <p className="text-gray-600">{t('shop.noProducts')}</p>
           </div>
         )}
 
@@ -226,7 +180,7 @@ const ShopPage = () => {
               disabled={currentPage === 1}
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 transition-colors"
             >
-              Previous
+              {t('common.previous')}
             </button>
             
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -248,7 +202,7 @@ const ShopPage = () => {
               disabled={currentPage === totalPages}
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 transition-colors"
             >
-              Next
+              {t('common.next')}
             </button>
           </div>
         )}
@@ -256,15 +210,15 @@ const ShopPage = () => {
         {/* Cart Summary */}
         {cart.length > 0 && (
           <div className="fixed bottom-20 md:bottom-4 right-4 bg-white rounded-lg shadow-lg border p-4 z-30">
-            <h3 className="font-semibold text-primary mb-2">Cart Summary</h3>
+            <h3 className="font-semibold text-primary mb-2">{t('shop.cartSummary')}</h3>
             <p className="text-sm text-gray-600 mb-3">
-              {getTotalItems()} items - {cart.reduce((total, item) => total + (item.price * item.quantity), 0)} ETB
+              {getTotalItems()} {t('shop.items')} - {cart.reduce((total, item) => total + (item.price * item.quantity), 0)} ETB
             </p>
             <button 
-              onClick={handleCheckout}
+              onClick={() => alert('Checkout functionality will be implemented soon')}
               className="w-full bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors"
             >
-              Checkout with CHAPA
+              {t('common.checkout')}
             </button>
           </div>
         )}

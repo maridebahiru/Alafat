@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { X, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface AuthModalProps {
 }
 
 const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -127,7 +129,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
                 <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder="Full Name"
+                  placeholder={t('auth.fullName')}
                   value={formData.fullName}
                   onChange={(e) => setFormData({...formData, fullName: e.target.value})}
                   className="w-full pl-12 pr-4 py-4 bg-white border-0 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5d2e1a]"
@@ -140,7 +142,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
               <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="email"
-                placeholder="Email Address"
+                placeholder={t('auth.email')}
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
                 className="w-full pl-12 pr-4 py-4 bg-white border-0 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5d2e1a]"
@@ -152,7 +154,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
               <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Password"
+                placeholder={t('auth.password')}
                 value={formData.password}
                 onChange={(e) => setFormData({...formData, password: e.target.value})}
                 className="w-full pl-12 pr-12 py-4 bg-white border-0 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5d2e1a]"
@@ -173,7 +175,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
                 <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder="Confirm Password"
+                  placeholder={t('auth.confirmPassword')}
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
                   className="w-full pl-12 pr-12 py-4 bg-white border-0 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5d2e1a]"
@@ -196,7 +198,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
                   type="button"
                   className="text-gray-600 text-sm hover:text-[#5d2e1a]"
                 >
-                  Forgot Password?
+                  {t('auth.forgotPassword')}
                 </button>
               </div>
             )}
@@ -212,7 +214,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
               disabled={loading}
               className="w-full bg-[#5d2e1a] hover:bg-[#4a2415] text-[#b8860b] py-4 px-6 rounded-lg font-semibold text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Please wait...' : (mode === 'login' ? 'Login' : 'Sign up')}
+              {loading ? t('auth.pleaseWait') : (mode === 'login' ? t('auth.login') : t('auth.signup'))}
             </button>
           </form>
 
@@ -238,7 +240,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
 
             <div className="text-center">
               <span className="text-gray-600 text-sm">
-                {mode === 'login' ? "Don't have an account?" : "Already have an account?"}
+                {mode === 'login' ? t('auth.noAccount') : t('auth.hasAccount')}
               </span>
               <button
                 onClick={() => {
@@ -247,7 +249,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
                 }}
                 className="text-[#b8860b] hover:text-[#9d7309] text-sm font-medium ml-2"
               >
-                {mode === 'login' ? 'Sign up' : 'Sign in'}
+                {mode === 'login' ? t('auth.signup') : t('auth.signIn')}
               </button>
             </div>
           </div>
