@@ -1,7 +1,9 @@
 
 import { useState, useEffect } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const CountdownTimer = () => {
+  const { language } = useLanguage();
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -10,7 +12,7 @@ const CountdownTimer = () => {
   });
 
   useEffect(() => {
-    // Set target date for Alafat event - January 7, 2026
+    // Set target date for Melody of Meriad event - January 7, 2026
     const targetDate = new Date('2026-01-07T00:00:00');
 
     const timer = setInterval(() => {
@@ -30,11 +32,12 @@ const CountdownTimer = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const title = language === 'am' ? 'የአላፋት ዝማሬ' : 'Melody of Meriad';
+
   return (
     <div className="bg-gradient-to-r from-primary to-secondary-dark text-white rounded-lg p-6 shadow-lg">
       <div className="text-center mb-4">
-        <h3 className="text-xl font-bold mb-2">Alafat Festival 2026</h3>
-        <p className="text-secondary opacity-90">Celebrating faith and community - January 7, 2026</p>
+        <h3 className="text-xl font-bold mb-2">{title}</h3>
       </div>
       
       <div className="grid grid-cols-4 gap-4 text-center">
