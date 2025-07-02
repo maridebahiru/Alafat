@@ -79,6 +79,7 @@ const translations = {
     
     // Featured Products
     'featured.products': 'Featured Products',
+    'featured.songs': 'Featured Songs',
     'featured.shopAll': 'Shop All',
     'featured.noProducts': 'No products available for your location.',
     
@@ -156,6 +157,7 @@ const translations = {
     
     // Featured Products
     'featured.products': 'የተመረጡ ምርቶች',
+    'featured.songs': 'የተመረጡ ዜማዎች',
     'featured.shopAll': 'ሁሉንም ይግዙ',
     'featured.noProducts': 'ለአካባቢዎ ምርት አልተገኘም።',
     

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { X, Mail, Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -231,11 +230,11 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
           </form>
 
           <div className="mt-8">
-            <div className="flex items-center space-x-4 mb-6">
+            <div className="flex items-center justify-center mb-6">
               <button
                 onClick={handleGoogleSignIn}
                 disabled={loading || googleLoading}
-                className="flex-1 bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-lg font-medium transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                className="bg-white border border-gray-300 text-gray-700 py-3 px-6 rounded-lg font-medium transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
               >
                 {googleLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -247,13 +246,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                   </svg>
                 )}
-                <span>{googleLoading ? 'Signing in...' : 'G'}</span>
-              </button>
-              <button 
-                className="flex-1 bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-lg font-medium transition-colors hover:bg-gray-50 flex items-center justify-center disabled:opacity-50"
-                disabled={loading || googleLoading}
-              >
-                📞
+                <span>{googleLoading ? 'Signing in...' : 'Sign in with Google'}</span>
               </button>
             </div>
 

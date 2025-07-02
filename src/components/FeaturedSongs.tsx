@@ -1,11 +1,14 @@
+
 import { useState, useEffect } from 'react';
 import { Play, Pause } from 'lucide-react';
 import { getSongs } from '../services/songService';
 import { Song } from '../services/types';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
+import { useLanguage } from '../contexts/LanguageContext';
 import LyricsPopup from './LyricsPopup';
 
 const FeaturedSongs = () => {
+  const { t } = useLanguage();
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
   const [showLyrics, setShowLyrics] = useState<string | null>(null);
@@ -37,8 +40,8 @@ const FeaturedSongs = () => {
   if (loading) {
     return (
       <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-primary">Featured Songs</h3>
-        <p className="text-gray-600">Loading songs...</p>
+        <h3 className="text-xl font-semibold text-primary">{t('featured.songs')}</h3>
+        <p className="text-gray-600">{t('common.loading')}</p>
       </div>
     );
   }
@@ -46,7 +49,7 @@ const FeaturedSongs = () => {
   if (songs.length === 0) {
     return (
       <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-primary">Featured Songs</h3>
+        <h3 className="text-xl font-semibold text-primary">{t('featured.songs')}</h3>
         <p className="text-gray-600">No songs available.</p>
       </div>
     );
@@ -56,7 +59,7 @@ const FeaturedSongs = () => {
     <>
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-xl font-semibold text-primary">Featured Songs</h3>
+          <h3 className="text-xl font-semibold text-primary">{t('featured.songs')}</h3>
           <button className="text-secondary-dark hover:text-primary text-sm font-medium">
             View All
           </button>

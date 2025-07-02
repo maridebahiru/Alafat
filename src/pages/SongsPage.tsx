@@ -5,7 +5,6 @@ import SongCard from '../components/SongCard';
 import { getSongs } from '../services/songService';
 import { Song } from '../services/types';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
-import { Search } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const SongsPage = () => {
@@ -77,7 +76,11 @@ const SongsPage = () => {
         {/* Search */}
         <div className="mb-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <img 
+              src="/lovable-uploads/c5c1c99b-6655-46d3-8dfa-8100276eb20e.png" 
+              alt="Alafat Logo" 
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 object-contain"
+            />
             <input
               type="text"
               placeholder={t('songs.searchPlaceholder')}
