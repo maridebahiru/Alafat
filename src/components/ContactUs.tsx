@@ -11,22 +11,34 @@ const ContactUs = () => {
     subject: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
-    // Create mailto link to send email to maramawitdereje93@gmail.com
-    const emailSubject = encodeURIComponent(formData.subject);
-    const emailBody = encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
-    );
-    const mailtoLink = `mailto:maramawitdereje93@gmail.com?subject=${emailSubject}&body=${emailBody}`;
-    
-    // Open email client
-    window.location.href = mailtoLink;
-    
-    // Reset form
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    try {
+      // Create mailto link to send email to maramawitdereje93@gmail.com
+      const emailSubject = encodeURIComponent(`Contact Form: ${formData.subject}`);
+      const emailBody = encodeURIComponent(
+        `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
+      );
+      const mailtoLink = `mailto:maramawitdereje93@gmail.com?subject=${emailSubject}&body=${emailBody}`;
+      
+      // Open email client
+      window.open(mailtoLink, '_blank');
+      
+      // Reset form
+      setFormData({ name: '', email: '', subject: '', message: '' });
+      
+      // Show success message
+      alert('Email client opened. Please send the message from your email application.');
+    } catch (error) {
+      console.error('Error opening email client:', error);
+      alert('There was an error opening your email client. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -55,6 +67,7 @@ const ContactUs = () => {
               onChange={handleChange}
               required
               placeholder="Your full name"
+              disabled={isSubmitting}
             />
           </div>
 
@@ -70,6 +83,7 @@ const ContactUs = () => {
               onChange={handleChange}
               required
               placeholder="your@email.com"
+              disabled={isSubmitting}
             />
           </div>
 
@@ -85,6 +99,7 @@ const ContactUs = () => {
               onChange={handleChange}
               required
               placeholder="What is this about?"
+              disabled={isSubmitting}
             />
           </div>
 
@@ -100,15 +115,17 @@ const ContactUs = () => {
               required
               placeholder="Tell us how we can help you..."
               rows={4}
+              disabled={isSubmitting}
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-primary hover:bg-primary/90 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+            disabled={isSubmitting}
+            className="w-full bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
           >
             <Send size={18} />
-            <span>Send Message</span>
+            <span>{isSubmitting ? 'Sending...' : 'Send Message'}</span>
           </button>
         </form>
       </div>

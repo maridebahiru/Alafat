@@ -2,19 +2,19 @@
 {
   "name": "Alafat Registration",
   "short_name": "Alafat",
-  "description": "Support Alafat Registration - Your donations help us continue our mission of faith, community, and service.",
+  "description": "Supporting Ethiopian Orthodox Christian faith, community, and traditions",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3c1012",
   "icons": [
     {
-      "src": "/lovable-uploads/2c396672-14d7-4d20-aad0-dd53b02ff0f8.png",
+      "src": "/lovable-uploads/bc21a838-b869-42f0-be13-68cefab2930f.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/lovable-uploads/2c396672-14d7-4d20-aad0-dd53b02ff0f8.png",
+      "src": "/lovable-uploads/bc21a838-b869-42f0-be13-68cefab2930f.png",
       "sizes": "512x512",
       "type": "image/png"
     }
