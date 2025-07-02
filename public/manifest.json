@@ -6,15 +6,15 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#3c1012",
+  "theme_color": "#DAA520",
   "icons": [
     {
-      "src": "/lovable-uploads/bc21a838-b869-42f0-be13-68cefab2930f.png",
+      "src": "/lovable-uploads/a1af653d-f53b-433e-993f-970c46ed6df2.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/lovable-uploads/bc21a838-b869-42f0-be13-68cefab2930f.png",
+      "src": "/lovable-uploads/a1af653d-f53b-433e-993f-970c46ed6df2.png",
       "sizes": "512x512",
       "type": "image/png"
     }

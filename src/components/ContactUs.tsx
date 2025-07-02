@@ -12,6 +12,7 @@ const ContactUs = () => {
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +33,8 @@ const ContactUs = () => {
       setFormData({ name: '', email: '', subject: '', message: '' });
       
       // Show success message
-      alert('Email client opened. Please send the message from your email application.');
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 5000);
     } catch (error) {
       console.error('Error opening email client:', error);
       alert('There was an error opening your email client. Please try again.');
@@ -53,6 +55,12 @@ const ContactUs = () => {
       <h2 className="text-2xl font-bold text-primary mb-6 text-center">Contact Us</h2>
       
       <div className="max-w-2xl mx-auto">
+        {showSuccess && (
+          <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+            Email client opened successfully! Please send the message from your email application.
+          </div>
+        )}
+        
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Send us a Message</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -125,7 +133,7 @@ const ContactUs = () => {
             className="w-full bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
           >
             <Send size={18} />
-            <span>{isSubmitting ? 'Sending...' : 'Send Message'}</span>
+            <span>{isSubmitting ? 'Opening Email Client...' : 'Send Message'}</span>
           </button>
         </form>
       </div>
