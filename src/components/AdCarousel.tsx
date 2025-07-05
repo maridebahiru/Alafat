@@ -1,96 +1,128 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { getInternalAdverts, Advert } from '../services/firebaseService';
+import { useAuth } from '../contexts/AuthContext';
 
 const AdCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  
-  const ads = [
-    {
-      id: 1,
-      image: '/lovable-uploads/ba20a4a5-84df-4981-acf0-cae01c447072.png',
-      title: 'Ethiopian Orthodox Music Collection',
-      description: 'Discover our extensive collection of traditional Orthodox songs and chants.',
-    },
-    {
-      id: 2,
-      image: '/lovable-uploads/aab69517-55fa-435c-bf9a-110721c35cf2.png',
-      title: 'Support Our Community',
-      description: 'Your donations help us preserve and share our sacred traditions.',
-    },
-    {
-      id: 3,
-      image: '/lovable-uploads/2c396672-14d7-4d20-aad0-dd53b02ff0f8.png',
-      title: 'Orthodox Products & Books',
-      description: 'Browse our collection of Orthodox books, icons, and religious items.',
-    }
-  ];
+  const [adverts, setAdverts] = useState<Advert[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { userProfile } = useAuth();
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % ads.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [ads.length]);
+    const fetchAdverts = async () => {
+      setLoading(true);
+      try {
+        const internalAdverts = await getInternalAdverts(userProfile?.location);
+        console.log('Fetched internal adverts:', internalAdverts);
+        setAdverts(internalAdverts);
+      } catch (error) {
+        console.error('Error loading internal adverts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAdverts();
+  }, [userProfile?.location]);
+
+  useEffect(() => {
+    if (adverts.length > 1) {
+      const timer = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % adverts.length);
+      }, 5000);
+
+      return () => clearInterval(timer);
+    }
+  }, [adverts.length]);
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % ads.length);
+    setCurrentSlide((prev) => (prev + 1) % adverts.length);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + ads.length) % ads.length);
+    setCurrentSlide((prev) => (prev - 1 + adverts.length) % adverts.length);
   };
 
+  const handleAdvertClick = (advert: Advert) => {
+    if (advert.link) {
+      window.open(advert.link, '_blank');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 rounded-lg bg-gray-200 animate-pulse flex items-center justify-center">
+        <span className="text-gray-500">Loading ads...</span>
+      </div>
+    );
+  }
+
+  if (adverts.length === 0) {
+    return (
+      <div className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 rounded-lg bg-gradient-to-r from-[#3c1012] to-[#3c1012]/80 flex items-center justify-center text-white">
+        <div className="text-center px-4">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 text-[#b37e10]">Welcome to Alafat</h3>
+          <p className="text-sm sm:text-base md:text-lg opacity-90">Your spiritual journey starts here</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="relative w-full h-64 md:h-96 rounded-lg overflow-hidden shadow-lg">
-      {ads.map((ad, index) => (
-        <div
-          key={ad.id}
-          className={`absolute inset-0 transition-opacity duration-500 ${
-            index === currentSlide ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
+    <div className="relative w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 rounded-lg overflow-hidden shadow-lg">
+      <div 
+        className="flex transition-transform duration-300 ease-in-out h-full"
+        style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+      >
+        {adverts.map((advert) => (
           <div
-            className="w-full h-full bg-cover bg-center relative"
+            key={advert.id}
+            className="min-w-full h-full relative flex items-center justify-center cursor-pointer bg-cover bg-center bg-no-repeat"
+            onClick={() => handleAdvertClick(advert)}
             style={{
-              backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${ad.image})`
+              backgroundImage: `linear-gradient(rgba(60, 16, 18, 0.2), rgba(60, 16, 18, 0.2)), url(${advert.image})`,
             }}
           >
-            <div className="absolute inset-0 flex items-center justify-center text-center text-white p-6">
-              <div>
-                <h2 className="text-2xl md:text-4xl font-bold mb-4">{ad.title}</h2>
-                <p className="text-lg md:text-xl opacity-90">{ad.description}</p>
-              </div>
-            </div>
+            {advert.link && (
+              <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all" />
+            )}
           </div>
-        </div>
-      ))}
-      
-      <button
-        onClick={prevSlide}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-colors"
-      >
-        <ChevronLeft size={24} />
-      </button>
-      
-      <button
-        onClick={nextSlide}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-colors"
-      >
-        <ChevronRight size={24} />
-      </button>
-      
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-        {ads.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentSlide(index)}
-            className={`w-3 h-3 rounded-full transition-colors ${
-              index === currentSlide ? 'bg-white' : 'bg-white/50'
-            }`}
-          />
         ))}
       </div>
+
+      {/* Navigation buttons - only show if more than 1 advert */}
+      {adverts.length > 1 && (
+        <>
+          <button
+            onClick={prevSlide}
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 transition-all"
+          >
+            <ChevronLeft size={20} className="text-white" />
+          </button>
+          
+          <button
+            onClick={nextSlide}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 transition-all"
+          >
+            <ChevronRight size={20} className="text-white" />
+          </button>
+
+          {/* Dots indicator */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            {adverts.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  index === currentSlide ? 'bg-[#b37e10] w-6' : 'bg-white bg-opacity-50'
+                }`}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };

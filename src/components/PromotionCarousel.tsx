@@ -1,110 +1,95 @@
 
 import { useState, useEffect } from 'react';
-import { ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
+import { getExternalAdverts, Advert } from '../services/firebaseService';
+import { useAuth } from '../contexts/AuthContext';
 
 const PromotionCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  
-  const promotions = [
-    {
-      id: 1,
-      title: 'Ethiopian Cultural Center',
-      description: 'Learn more about Ethiopian history and culture',
-      image: '/lovable-uploads/ba20a4a5-84df-4981-acf0-cae01c447072.png',
-      link: '#',
-      bgColor: 'bg-blue-600'
-    },
-    {
-      id: 2,
-      title: 'Orthodox Book Store',
-      description: 'Discover spiritual books and resources',
-      image: '/lovable-uploads/aab69517-55fa-435c-bf9a-110721c35cf2.png',
-      link: '#',
-      bgColor: 'bg-green-600'
-    },
-    {
-      id: 3,
-      title: 'Community Events',
-      description: 'Join our upcoming community gatherings',
-      image: '/lovable-uploads/2c396672-14d7-4d20-aad0-dd53b02ff0f8.png',
-      link: '#',
-      bgColor: 'bg-purple-600'
-    }
-  ];
+  const [adverts, setAdverts] = useState<Advert[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { userProfile } = useAuth();
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % promotions.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, [promotions.length]);
+    const fetchAdverts = async () => {
+      setLoading(true);
+      try {
+        const externalAdverts = await getExternalAdverts(userProfile?.location);
+        console.log('Fetched external adverts:', externalAdverts);
+        setAdverts(externalAdverts);
+      } catch (error) {
+        console.error('Error loading external adverts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % promotions.length);
+    fetchAdverts();
+  }, [userProfile?.location]);
+
+  useEffect(() => {
+    if (adverts.length > 1) {
+      const timer = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % adverts.length);
+      }, 3000); // Change slide every 3 seconds
+
+      return () => clearInterval(timer);
+    }
+  }, [adverts.length]);
+
+  const handleAdvertClick = (advert: Advert) => {
+    if (advert.link) {
+      window.open(advert.link, '_blank');
+    }
   };
 
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + promotions.length) % promotions.length);
-  };
+  if (loading) {
+    return (
+      <div className="relative overflow-hidden bg-gray-200 rounded-lg shadow-md h-20 sm:h-24 md:h-28 lg:h-32 xl:h-36 animate-pulse flex items-center justify-center">
+        <span className="text-gray-500 text-sm sm:text-base">Loading promotions...</span>
+      </div>
+    );
+  }
+
+  if (adverts.length === 0) {
+    return null; // Don't show anything if no external adverts
+  }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-2xl font-bold text-primary mb-6 text-center">Community Partners</h2>
-      
-      <div className="relative w-full h-48 rounded-lg overflow-hidden">
-        {promotions.map((promo, index) => (
+    <div className="relative overflow-hidden bg-white rounded-lg shadow-md h-20 sm:h-24 md:h-28 lg:h-32 xl:h-36">
+      <div 
+        className="flex transition-transform duration-500 ease-in-out h-full"
+        style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+      >
+        {adverts.map((advert) => (
           <div
-            key={promo.id}
-            className={`absolute inset-0 transition-opacity duration-500 ${
-              index === currentSlide ? 'opacity-100' : 'opacity-0'
-            }`}
+            key={advert.id}
+            className="min-w-full h-full flex items-center justify-center cursor-pointer relative bg-cover bg-center bg-no-repeat"
+            onClick={() => handleAdvertClick(advert)}
+            style={{
+              backgroundImage: `url(${advert.image})`,
+            }}
           >
-            <div className={`w-full h-full ${promo.bgColor} relative`}>
-              <div className="absolute inset-0 bg-black/30" />
-              <div className="absolute inset-0 flex items-center justify-between p-6 text-white">
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2">{promo.title}</h3>
-                  <p className="text-sm opacity-90 mb-4">{promo.description}</p>
-                  <button className="bg-white text-gray-900 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors inline-flex items-center">
-                    Learn More
-                    <ExternalLink className="w-4 h-4 ml-2" />
-                  </button>
-                </div>
-                <div 
-                  className="w-24 h-24 bg-cover bg-center rounded-lg ml-4 opacity-80"
-                  style={{ backgroundImage: `url(${promo.image})` }}
-                />
-              </div>
-            </div>
+            {advert.link && (
+              <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all" />
+            )}
           </div>
         ))}
-        
-        <button
-          onClick={prevSlide}
-          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-1 rounded-full transition-colors"
-        >
-          <ChevronLeft size={20} />
-        </button>
-        
-        <button
-          onClick={nextSlide}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-1 rounded-full transition-colors"
-        >
-          <ChevronRight size={20} />
-        </button>
       </div>
-      
-      <div className="flex justify-center space-x-2 mt-4">
-        {promotions.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentSlide(index)}
-            className={`w-2 h-2 rounded-full transition-colors ${
-              index === currentSlide ? 'bg-primary' : 'bg-gray-300'
-            }`}
-          />
-        ))}
-      </div>
+
+      {/* Dots indicator - only show if more than 1 advert */}
+      {adverts.length > 1 && (
+        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
+          {adverts.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`w-2 h-2 rounded-full transition-all ${
+                index === currentSlide ? 'bg-white w-4' : 'bg-white bg-opacity-50'
+              }`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

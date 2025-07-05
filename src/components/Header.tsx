@@ -1,44 +1,120 @@
 
-import { Menu, User } from 'lucide-react';
+import { useState } from 'react';
+import { Menu, X, LogOut } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
 
 const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+  const { currentUser, logout } = useAuth();
   const { t } = useLanguage();
 
-  return (
-    <header className="bg-white shadow-sm border-b">
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <img 
-              src="/lovable-uploads/c5c1c99b-6655-46d3-8dfa-8100276eb20e.png" 
-              alt="Alafat Logo" 
-              className="w-8 h-8 object-contain"
-            />
-            <h1 className="text-xl font-bold text-primary">Alafat</h1>
-          </div>
-          
-          <div className="hidden md:flex items-center space-x-6">
-            <nav className="flex space-x-6">
-              <a href="/" className="text-gray-700 hover:text-primary transition-colors">{t('nav.home')}</a>
-              <a href="/about" className="text-gray-700 hover:text-primary transition-colors">{t('nav.about')}</a>
-              <a href="/songs" className="text-gray-700 hover:text-primary transition-colors">{t('nav.songs')}</a>
-              <a href="/shop" className="text-gray-700 hover:text-primary transition-colors">{t('nav.shop')}</a>
-              <a href="/donate" className="text-gray-700 hover:text-primary transition-colors">{t('nav.donate')}</a>
-            </nav>
-            <LanguageSwitcher />
-          </div>
+  const navItems = [
+    { path: '/', label: t('nav.home') },
+    { path: '/about', label: t('nav.about') },
+    { path: '/songs', label: t('nav.songs') },
+    { path: '/shop', label: t('nav.shop') },
+    { path: '/donate', label: t('nav.donate') },
+  ];
 
-          <div className="flex items-center space-x-4">
-            <button className="md:hidden">
-              <Menu className="w-6 h-6 text-gray-700" />
-            </button>
-            <a href="/profile" className="p-2 rounded-full hover:bg-gray-100 transition-colors">
-              <User className="w-5 h-5 text-gray-700" />
-            </a>
-          </div>
+  const isActive = (path: string) => location.pathname === path;
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
+  return (
+    <header className="bg-[#3c1012] shadow-md sticky top-0 z-40">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-2">
+            <img 
+              src="/lovable-uploads/aab69517-55fa-435c-bf9a-110721c35cf2.png" 
+              alt="Logo" 
+              className="w-10 h-10 object-contain"
+            />
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`font-medium transition-colors ${
+                  isActive(item.path)
+                    ? 'text-[#b37e10] border-b-2 border-[#b37e10]'
+                    : 'text-white hover:text-[#b37e10]'
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+            <LanguageSwitcher />
+            {currentUser && (
+              <button
+                onClick={handleLogout}
+                className="flex items-center space-x-1 text-white hover:text-[#b37e10] font-medium transition-colors"
+              >
+                <LogOut size={16} />
+                <span>Logout</span>
+              </button>
+            )}
+          </nav>
+
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden p-2 text-white"
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden py-4 border-t border-[#b37e10]/20">
+            <nav className="flex flex-col space-y-4">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`font-medium transition-colors ${
+                    isActive(item.path)
+                      ? 'text-[#b37e10]'
+                      : 'text-white hover:text-[#b37e10]'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <div className="pt-2">
+                <LanguageSwitcher />
+              </div>
+              {currentUser && (
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex items-center space-x-1 text-white hover:text-[#b37e10] font-medium transition-colors text-left"
+                >
+                  <LogOut size={16} />
+                  <span>Logout</span>
+                </button>
+              )}
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   );

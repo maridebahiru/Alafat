@@ -1,22 +1,38 @@
 
 import { Globe } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 
 const LanguageSwitcher = () => {
   const { language, setLanguage } = useLanguage();
 
   return (
-    <div className="flex items-center space-x-2">
-      <Globe className="w-4 h-4 text-gray-600" />
-      <select
-        value={language}
-        onChange={(e) => setLanguage(e.target.value as 'en' | 'am')}
-        className="text-sm border-none bg-transparent focus:outline-none text-gray-700"
-      >
-        <option value="en">EN</option>
-        <option value="am">አማ</option>
-      </select>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="flex items-center space-x-2 text-white hover:text-[#b37e10] transition-colors">
+          <Globe className="w-5 h-5" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-32">
+        <DropdownMenuItem
+          onClick={() => setLanguage('en')}
+          className={`cursor-pointer ${language === 'en' ? 'bg-primary/10' : ''}`}
+        >
+          English
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => setLanguage('am')}
+          className={`cursor-pointer ${language === 'am' ? 'bg-primary/10' : ''}`}
+        >
+          አማርኛ
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

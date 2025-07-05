@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import ProductCard from '../components/ProductCard';
-import CheckoutModal from '../components/CheckoutModal';
 import { ShoppingCart, Filter, Search } from 'lucide-react';
 import { getProducts } from '../services/productService';
 import { Product } from '../services/types';
@@ -22,7 +21,6 @@ const ShopPage = () => {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showCheckout, setShowCheckout] = useState(false);
   const productsPerPage = 6;
 
   useEffect(() => {
@@ -84,15 +82,6 @@ const ShopPage = () => {
 
   const getTotalItems = () => {
     return cart.reduce((total, item) => total + item.quantity, 0);
-  };
-
-  const getTotalAmount = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
-
-  const handleCheckoutSuccess = () => {
-    setCart([]);
-    alert('Payment initiated successfully! Please complete the payment in the new tab.');
   };
 
   if (loading) {
@@ -223,32 +212,16 @@ const ShopPage = () => {
           <div className="fixed bottom-20 md:bottom-4 right-4 bg-white rounded-lg shadow-lg border p-4 z-30">
             <h3 className="font-semibold text-primary mb-2">{t('shop.cartSummary')}</h3>
             <p className="text-sm text-gray-600 mb-3">
-              {getTotalItems()} {t('shop.items')} - {getTotalAmount().toFixed(2)} ETB
+              {getTotalItems()} {t('shop.items')} - {cart.reduce((total, item) => total + (item.price * item.quantity), 0)} ETB
             </p>
             <button 
-              onClick={() => setShowCheckout(true)}
+              onClick={() => alert('Checkout functionality will be implemented soon')}
               className="w-full bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors"
             >
               {t('common.checkout')}
             </button>
           </div>
         )}
-
-        {/* Checkout Modal */}
-        <CheckoutModal
-          isOpen={showCheckout}
-          onClose={() => setShowCheckout(false)}
-          cartItems={cart.map(item => ({
-            id: item.id || '',
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            image: item.image,
-            category: item.category,
-          }))}
-          totalAmount={getTotalAmount()}
-          onSuccess={handleCheckoutSuccess}
-        />
       </div>
     </Layout>
   );

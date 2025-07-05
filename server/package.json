@@ -2,23 +2,15 @@
 {
   "name": "alafat-server",
   "version": "1.0.0",
-  "description": "Server for Alafat application with Chapa payment integration",
+  "description": "Server for Alafat application",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
-  "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "axios": "^1.6.0",
-    "crypto": "^1.0.1"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.1"
-  },
-  "keywords": ["alafat", "server", "chapa", "payment"],
+  "dependencies": {},
+  "devDependencies": {},
+  "keywords": ["alafat", "server"],
   "author": "Alafat Team",
   "license": "MIT"
 }
