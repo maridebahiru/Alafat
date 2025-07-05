@@ -1,0 +1,16 @@
+
+{
+  "name": "alafat-server",
+  "version": "1.0.0",
+  "description": "Server for Alafat application",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "keywords": ["alafat", "server"],
+  "author": "Alafat Team",
+  "license": "MIT"
+}

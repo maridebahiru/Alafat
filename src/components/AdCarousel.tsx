@@ -53,7 +53,7 @@ const AdCarousel = () => {
 
   if (loading) {
     return (
-      <div className="w-full h-48 sm:h-56 md:h-64 lg:h-72 rounded-lg bg-gray-200 animate-pulse flex items-center justify-center">
+      <div className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 rounded-lg bg-gray-200 animate-pulse flex items-center justify-center">
         <span className="text-gray-500">Loading ads...</span>
       </div>
     );
@@ -61,7 +61,7 @@ const AdCarousel = () => {
 
   if (adverts.length === 0) {
     return (
-      <div className="w-full h-48 sm:h-56 md:h-64 lg:h-72 rounded-lg bg-gradient-to-r from-[#3c1012] to-[#3c1012]/80 flex items-center justify-center text-white">
+      <div className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 rounded-lg bg-gradient-to-r from-[#3c1012] to-[#3c1012]/80 flex items-center justify-center text-white">
         <div className="text-center px-4">
           <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 text-[#b37e10]">Welcome to Alafat</h3>
           <p className="text-sm sm:text-base md:text-lg opacity-90">Your spiritual journey starts here</p>
@@ -71,7 +71,7 @@ const AdCarousel = () => {
   }
 
   return (
-    <div className="relative w-full h-48 sm:h-56 md:h-64 lg:h-72 rounded-lg overflow-hidden shadow-lg">
+    <div className="relative w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 rounded-lg overflow-hidden shadow-lg">
       <div 
         className="flex transition-transform duration-300 ease-in-out h-full"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -79,12 +79,10 @@ const AdCarousel = () => {
         {adverts.map((advert) => (
           <div
             key={advert.id}
-            className="min-w-full h-full relative flex items-center justify-center cursor-pointer"
+            className="min-w-full h-full relative flex items-center justify-center cursor-pointer bg-cover bg-center bg-no-repeat"
             onClick={() => handleAdvertClick(advert)}
             style={{
-              backgroundImage: `linear-gradient(rgba(60, 16, 18, 0.3), rgba(60, 16, 18, 0.3)), url(${advert.image})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
+              backgroundImage: `linear-gradient(rgba(60, 16, 18, 0.2), rgba(60, 16, 18, 0.2)), url(${advert.image})`,
             }}
           >
             {advert.link && (
