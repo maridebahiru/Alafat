@@ -1,11 +1,11 @@
 
-import Layout from '../components/Layout';
-import AdCarousel from '../components/AdCarousel';
-import FeaturedSongs from '../components/FeaturedSongs';
-import FeaturedProducts from '../components/FeaturedProducts';
-import CountdownTimer from '../components/CountdownTimer';
-import ContactUs from '../components/ContactUs';
-import PromotionCarousel from '../components/PromotionCarousel';
+import Layout from '../../client/src/components/Layout';
+import AdCarousel from '../../client/src/components/AdCarousel';
+import FeaturedSongs from '../../client/src/components/FeaturedSongs';
+import FeaturedProducts from '../../client/src/components/FeaturedProducts';
+import CountdownTimer from '../../client/src/components/CountdownTimer';
+import ContactUs from '../../client/src/components/ContactUs';
+import PromotionCarousel from '../../client/src/components/PromotionCarousel';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const HomePage = () => {
