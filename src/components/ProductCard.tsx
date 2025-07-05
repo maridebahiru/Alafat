@@ -11,8 +11,8 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       <div 
-        className="h-48 bg-cover bg-center"
-        style={{ backgroundImage: `url(${product.imageUrl})` }}
+        className="h-48 bg-cover bg-center bg-gray-200"
+        style={{ backgroundImage: product.image ? `url(${product.image})` : undefined }}
       />
       <div className="p-4">
         <div className="mb-2">
@@ -21,15 +21,9 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
           </span>
         </div>
         <h3 className="font-semibold text-gray-900 mb-2">{product.name}</h3>
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
         <div className="flex items-center justify-between">
           <div>
             <span className="text-lg font-bold text-primary">{product.price} ETB</span>
-            {product.originalPrice && (
-              <span className="text-sm text-gray-500 line-through ml-2">
-                {product.originalPrice} ETB
-              </span>
-            )}
           </div>
           <button
             onClick={() => onAddToCart(product)}

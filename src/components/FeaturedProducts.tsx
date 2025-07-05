@@ -45,8 +45,8 @@ const FeaturedProducts = () => {
         {products.map((product) => (
           <div key={product.id} className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
             <div 
-              className="h-32 bg-cover bg-center"
-              style={{ backgroundImage: `url(${product.imageUrl})` }}
+              className="h-32 bg-cover bg-center bg-gray-200"
+              style={{ backgroundImage: product.image ? `url(${product.image})` : undefined }}
             />
             <div className="p-4">
               <h3 className="font-medium text-gray-900 mb-1">{product.name}</h3>

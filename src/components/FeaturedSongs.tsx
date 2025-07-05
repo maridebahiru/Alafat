@@ -52,8 +52,8 @@ const FeaturedSongs = () => {
           <div key={song.id} className="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow">
             <div className="flex items-center space-x-3">
               <div 
-                className="w-12 h-12 bg-cover bg-center rounded-lg flex-shrink-0"
-                style={{ backgroundImage: `url(${song.coverArt})` }}
+                className="w-12 h-12 bg-cover bg-center bg-gray-200 rounded-lg flex-shrink-0"
+                style={{ backgroundImage: song.imageUrl ? `url(${song.imageUrl})` : undefined }}
               />
               <div className="flex-1 min-w-0">
                 <h3 className="font-medium text-gray-900 truncate">{song.title}</h3>

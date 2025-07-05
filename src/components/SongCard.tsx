@@ -12,8 +12,8 @@ const SongCard = ({ song, isPlaying, onTogglePlay }: SongCardProps) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       <div 
-        className="h-48 bg-cover bg-center relative"
-        style={{ backgroundImage: `url(${song.coverArt})` }}
+        className="h-48 bg-cover bg-center bg-gray-200 relative"
+        style={{ backgroundImage: song.imageUrl ? `url(${song.imageUrl})` : undefined }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
           <button
