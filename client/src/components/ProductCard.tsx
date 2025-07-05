@@ -1,4 +1,3 @@
-
 import { ShoppingCart, MapPin } from 'lucide-react';
 import { Product } from '../services/types';
 

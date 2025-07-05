@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { getExternalAdverts, Advert } from '../services/firebaseService';
 import { useAuth } from '../contexts/AuthContext';

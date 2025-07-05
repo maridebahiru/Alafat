@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Play, Pause } from 'lucide-react';
 import { getSongs } from '../services/songService';

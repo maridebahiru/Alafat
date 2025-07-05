@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { User, Phone, MapPin, Heart } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';

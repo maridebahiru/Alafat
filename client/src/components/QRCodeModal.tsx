@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import QRCode from 'qrcode';
