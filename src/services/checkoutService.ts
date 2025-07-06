@@ -1,5 +1,7 @@
 
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.PROD 
+  ? 'https://your-app-name.onrender.com/api' // Replace with your actual Render URL
+  : 'http://localhost:3001/api';
 
 export interface CheckoutData {
   amount: number;
@@ -49,7 +51,7 @@ export const initializePayment = async (checkoutData: CheckoutData): Promise<Che
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
       return {
         success: false,
-        message: 'Unable to connect to payment server. Please make sure the server is running at http://localhost:3001'
+        message: 'Unable to connect to payment server. Please try again later.'
       };
     }
     

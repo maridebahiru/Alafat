@@ -9,7 +9,12 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://your-netlify-site.netlify.app', // Replace with your actual Netlify URL
+    process.env.FRONTEND_URL
+  ].filter(Boolean),
   credentials: true
 }));
 app.use(express.json());
@@ -59,7 +64,7 @@ app.post('/api/chapa/initialize', async (req, res) => {
       phone_number,
       tx_ref,
       return_url: return_url || `${process.env.FRONTEND_URL}/payment/success`,
-      callback_url: callback_url || `${process.env.FRONTEND_URL}/api/chapa/webhook`,
+      callback_url: callback_url || `${process.env.BACKEND_URL}/api/chapa/webhook`,
       customization: {
         title: customization?.title || 'Alafat Payment',
         description: customization?.description || 'Payment for Alafat services',
@@ -182,6 +187,6 @@ app.get('/api/chapa/public-key', (req, res) => {
 // Start server
 app.listen(PORT, () => {
   console.log(`Alafat Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Frontend URL: ${process.env.FRONTEND_URL}`);
 });
