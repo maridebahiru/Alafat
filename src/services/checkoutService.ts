@@ -27,6 +27,8 @@ export interface CheckoutResponse {
 
 export const initializePayment = async (checkoutData: CheckoutData): Promise<CheckoutResponse> => {
   try {
+    console.log('Attempting to connect to server at:', API_BASE_URL);
+    
     const response = await fetch(`${API_BASE_URL}/chapa/initialize`, {
       method: 'POST',
       headers: {
@@ -35,12 +37,25 @@ export const initializePayment = async (checkoutData: CheckoutData): Promise<Che
       body: JSON.stringify(checkoutData),
     });
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     return await response.json();
   } catch (error) {
     console.error('Checkout error:', error);
+    
+    // Check if it's a connection refused error
+    if (error instanceof TypeError && error.message === 'Failed to fetch') {
+      return {
+        success: false,
+        message: 'Unable to connect to payment server. Please make sure the server is running at http://localhost:3001'
+      };
+    }
+    
     return {
       success: false,
-      message: 'Failed to initialize payment'
+      message: 'Failed to initialize payment. Please try again.'
     };
   }
 };
@@ -48,9 +63,22 @@ export const initializePayment = async (checkoutData: CheckoutData): Promise<Che
 export const verifyPayment = async (tx_ref: string): Promise<any> => {
   try {
     const response = await fetch(`${API_BASE_URL}/chapa/verify/${tx_ref}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     return await response.json();
   } catch (error) {
     console.error('Payment verification error:', error);
+    
+    if (error instanceof TypeError && error.message === 'Failed to fetch') {
+      return {
+        success: false,
+        message: 'Unable to connect to payment server for verification'
+      };
+    }
+    
     return {
       success: false,
       message: 'Failed to verify payment'
