@@ -12,7 +12,7 @@ app.use(cors({
   origin: [
     'http://localhost:5173',
     'http://localhost:3000',
-    'https://your-netlify-site.netlify.app', // Replace with your actual Netlify URL
+    'https://http://yealafatzemare.netlify.app/', 
     process.env.FRONTEND_URL
   ].filter(Boolean),
   credentials: true
