@@ -1,6 +1,6 @@
 
 const API_BASE_URL = import.meta.env.PROD 
-  ? 'https://your-app-name.onrender.com/api' // Replace with your actual Render URL
+  ? 'https://your-app-name.onrender.com/api' // You need to replace this with your actual Render URL
   : 'http://localhost:3001/api';
 
 export interface CheckoutData {
@@ -30,41 +30,53 @@ export interface CheckoutResponse {
 export const initializePayment = async (checkoutData: CheckoutData): Promise<CheckoutResponse> => {
   try {
     console.log('Attempting to connect to server at:', API_BASE_URL);
+    console.log('Current environment:', import.meta.env.PROD ? 'production' : 'development');
     
     const response = await fetch(`${API_BASE_URL}/chapa/initialize`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
       body: JSON.stringify(checkoutData),
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Server response error:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText
+      });
+      throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
     }
 
     return await response.json();
   } catch (error) {
     console.error('Checkout error:', error);
     
-    // Check if it's a connection refused error
+    // Check if it's a CORS or connection error
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
       return {
         success: false,
-        message: 'Unable to connect to payment server. Please try again later.'
+        message: 'Unable to connect to payment server. Please make sure the server is running and properly configured for CORS.'
       };
     }
     
     return {
       success: false,
-      message: 'Failed to initialize payment. Please try again.'
+      message: `Payment initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`
     };
   }
 };
 
 export const verifyPayment = async (tx_ref: string): Promise<any> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/chapa/verify/${tx_ref}`);
+    const response = await fetch(`${API_BASE_URL}/chapa/verify/${tx_ref}`, {
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
