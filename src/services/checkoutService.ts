@@ -1,6 +1,6 @@
 
 const API_BASE_URL = import.meta.env.PROD 
-  ? 'https://your-app-name.onrender.com/api' // You need to replace this with your actual Render URL
+  ? 'https://alafat-chants-shop.onrender.com/api'
   : 'http://localhost:3001/api';
 
 export interface CheckoutData {
