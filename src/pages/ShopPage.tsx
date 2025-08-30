@@ -1,14 +1,15 @@
 
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
-import CheckoutModal from '../components/CheckoutModal';
 import ShopHeader from '../components/shop/ShopHeader';
 import SearchBar from '../components/shop/SearchBar';
 import CategoryFilter from '../components/shop/CategoryFilter';
 import ProductGrid from '../components/shop/ProductGrid';
 import Pagination from '../components/shop/Pagination';
-import CartSummary from '../components/shop/CartSummary';
+import CartDrawer from '../components/CartDrawer';
+import ThankYouPage from '../components/ThankYouPage';
 import { getProducts } from '../services/productService';
+import { generateReceiptNumber, downloadReceipt } from '../services/receiptService';
 import { Product } from '../services/types';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -27,7 +28,9 @@ const ShopPage = () => {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [showCartDrawer, setShowCartDrawer] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
+  const [lastReceiptData, setLastReceiptData] = useState<any>(null);
   const productsPerPage = 6;
 
   useEffect(() => {
@@ -84,15 +87,58 @@ const ShopPage = () => {
     });
   };
 
+  const updateQuantity = (id: string, quantity: number) => {
+    if (quantity === 0) {
+      removeItem(id);
+      return;
+    }
+    setCart(prevCart =>
+      prevCart.map(item =>
+        item.id === id ? { ...item, quantity } : item
+      )
+    );
+  };
+
+  const removeItem = (id: string) => {
+    setCart(prevCart => prevCart.filter(item => item.id !== id));
+  };
+
   const getTotalItems = () => cart.reduce((total, item) => total + item.quantity, 0);
   const getTotalAmount = () => cart.reduce((total, item) => total + (item.price * item.quantity), 0);
 
-  const handleCheckout = () => {
+  const handleProceed = () => {
     if (cart.length === 0) {
       alert('Your cart is empty');
       return;
     }
-    setShowCheckoutModal(true);
+
+    const receiptData = {
+      cartItems: cart,
+      totalAmount: getTotalAmount(),
+      customerName: userProfile?.fullName,
+      date: new Date(),
+      receiptNumber: generateReceiptNumber(),
+    };
+
+    setLastReceiptData(receiptData);
+    
+    // Generate and download PDF
+    downloadReceipt(receiptData);
+    
+    // Clear cart and show thank you page
+    setCart([]);
+    setShowCartDrawer(false);
+    setShowThankYou(true);
+  };
+
+  const handleBackToShopping = () => {
+    setShowThankYou(false);
+  };
+
+  const handleDownloadReceipt = () => {
+    if (lastReceiptData) {
+      downloadReceipt(lastReceiptData);
+    }
   };
 
   return (
@@ -102,6 +148,7 @@ const ShopPage = () => {
           title={t('shop.title')}
           description={t('shop.description')}
           totalItems={getTotalItems()}
+          onCartClick={() => setShowCartDrawer(true)}
         />
 
         <SearchBar
@@ -132,20 +179,19 @@ const ShopPage = () => {
           nextText={t('common.next')}
         />
 
-        <CartSummary
-          totalItems={getTotalItems()}
-          totalAmount={getTotalAmount()}
-          onCheckout={handleCheckout}
-          cartSummaryText={t('shop.cartSummary')}
-          itemsText={t('shop.items')}
-          checkoutText={t('common.checkout')}
+        <CartDrawer
+          isOpen={showCartDrawer}
+          onClose={() => setShowCartDrawer(false)}
+          cartItems={cart}
+          onUpdateQuantity={updateQuantity}
+          onRemoveItem={removeItem}
+          onProceed={handleProceed}
         />
 
-        <CheckoutModal
-          isOpen={showCheckoutModal}
-          onClose={() => setShowCheckoutModal(false)}
-          cartItems={cart}
-          totalAmount={getTotalAmount()}
+        <ThankYouPage
+          isVisible={showThankYou}
+          onBackToShopping={handleBackToShopping}
+          onDownloadReceipt={handleDownloadReceipt}
         />
       </div>
     </Layout>

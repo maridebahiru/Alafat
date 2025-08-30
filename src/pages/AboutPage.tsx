@@ -1,6 +1,6 @@
 
 import Layout from '../components/Layout';
-import GoogleMap from '../components/GoogleMap';
+import { ShootingStars } from '../components/ui/shooting-stars';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const AboutPage = () => {
@@ -9,22 +9,70 @@ const AboutPage = () => {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-6">
-        {/* Hero Section with Banner Background */}
-        <section 
-          className="bg-gradient-to-r from-primary to-primary/80 text-white rounded-lg p-8 mb-8 relative overflow-hidden"
-          style={{
-            backgroundImage: `linear-gradient(rgba(60, 16, 18, 0.8), rgba(60, 16, 18, 0.8)), url('/lovable-uploads/ba20a4a5-84df-4981-acf0-cae01c447072.png')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
-        >
-          <div className="text-center relative z-10">
+        {/* Hero Section with Shooting Stars Background */}
+        <section className="bg-primary text-white rounded-lg relative overflow-hidden min-h-[60vh] mb-8">
+          {/* Background with stars */}
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.15)_0%,rgba(0,0,0,0)_80%)]" />
+            <div className="stars absolute inset-0" />
+          </div>
+
+          {/* Content */}
+          <div className="relative z-10 flex flex-col items-center justify-center h-full text-center p-8">
             <h1 className="text-3xl md:text-4xl font-bold mb-4">{t('nav.about')}</h1>
             <p className="text-lg md:text-xl text-secondary opacity-90 max-w-3xl mx-auto">
               A vibrant Ethiopian Orthodox Christian community dedicated to preserving our faith, 
               culture, and traditions through music, fellowship, and service.
             </p>
           </div>
+
+          {/* Multiple shooting star layers with different colors and speeds */}
+          <ShootingStars 
+            starColor="hsl(var(--secondary))" 
+            trailColor="hsl(var(--secondary) / 0.3)" 
+            minSpeed={15} 
+            maxSpeed={35} 
+            minDelay={1000} 
+            maxDelay={3000} 
+          />
+          <ShootingStars 
+            starColor="hsl(var(--secondary-dark))" 
+            trailColor="hsl(var(--secondary-dark) / 0.2)" 
+            minSpeed={10} 
+            maxSpeed={25} 
+            minDelay={2000} 
+            maxDelay={4000} 
+          />
+          <ShootingStars 
+            starColor="rgba(255,255,255,0.8)" 
+            trailColor="rgba(255,255,255,0.2)" 
+            minSpeed={20} 
+            maxSpeed={40} 
+            minDelay={1500} 
+            maxDelay={3500} 
+          />
+
+          <style jsx>{`
+            .stars {
+              background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 160px 120px, #ddd, rgba(0,0,0,0));
+              background-repeat: repeat;
+              background-size: 200px 200px;
+              animation: twinkle 5s ease-in-out infinite;
+              opacity: 0.5;
+            }
+            
+            @keyframes twinkle {
+              0% { opacity: 0.5; }
+              50% { opacity: 0.8; }
+              100% { opacity: 0.5; }
+            }
+          `}</style>
         </section>
 
         {/* Mission & Vision */}
