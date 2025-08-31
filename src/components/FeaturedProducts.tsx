@@ -74,9 +74,9 @@ const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold text-primary">{t('featured.products')}</h3>
-        <button className="text-secondary-dark hover:text-primary text-sm font-medium">
-          {t('featured.shopAll')}
+        <h3 className="text-xl font-semibold text-amber-800">{t('featured.products')}</h3>
+        <button className="text-red-900 hover:text-amber-700 text-sm font-medium">
+          View All
         </button>
       </div>
       
@@ -97,12 +97,12 @@ const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
                     <span>{getLocationDisplay(product.location)}</span>
                   </div>
                 </div>
-                <p className="text-secondary-dark font-bold text-lg mb-3">
+                <p className="text-red-800 font-bold text-lg mb-3">
                   {product.price} Ethiopian Birr
                 </p>
                 <button
                   onClick={() => handleAddToCart(product)}
-                  className="w-full bg-primary hover:bg-primary/90 text-white py-2 px-3 rounded-md flex items-center justify-center space-x-2 transition-colors text-sm"
+                  className="w-full bg-red-900 hover:bg-red-800 text-white py-2 px-3 rounded-md flex items-center justify-center space-x-2 transition-colors text-sm"
                 >
                   <ShoppingCart size={16} />
                   <span>{t('common.addToCart')}</span>
