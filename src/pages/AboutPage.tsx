@@ -2,29 +2,45 @@ import Layout from '../components/Layout';
 import { About3 } from '@/components/ui/about-3';
 
 const AboutPage = () => {
+  const description = `መግቢያ
+
+ህንደኬ የተባለች የኢትዮጵያ ንግሥት አዛዥና ጃንደረባ የነበረ በገንዘብዋም ሁሉ የሠለጠነ አንድ የኢትዮጵያ ሰው ሊሰግድ ወደ ኢየሩሳሌም መጥቶ ነበር፤ ሲመለስም በሰረገላ ተቀምጦ የነቢዩን የኢሳይያስን መጽሐፍ ያነብ ነበር።መንፈስም ፊልጶስን። ወደዚህ ሰረገላ ቅረብና ተገናኝ አለው።
+
+ፊልጶስም ሮጦ የነቢዩን የኢሳይያስን መጽሐፍ ሲያነብ ሰማና።በውኑ የምታነበውን ታስተውለዋለህን? አለው።እርሱም። የሚመራኝ ሳይኖር ይህ እንዴት ይቻለኛል?አለው።
+
+ፊልጶስም አፉን ከፈተ፥ከዚህም መጽሐፍ ጀምሮ ስለ ኢየሱስ ወንጌልን ሰበከለት።በመንገድም ሲሄዱ ወደ ውኃ ደረሱ፤ ጃንደረባውም። እነሆ ውኃ፤እንዳልጠመቅ የሚከለክለኝ ምንድር ነው?አለው። 
+
+ፊልጶስም።በፍጹም ልብህ ብታምን፥ተፈቅዶአል አለው። መልሶም። ኢየሱስ ክርስቶስ የእግዚአብሔር ልጅ እንደ ሆነ አምናለሁ አለ። ሰረገላውም ይቆም ዘንድ አዘዘ፥ ፊልጶስና ጃንደረባው ሁለቱም ወደ ውኃ ወረዱ፥ አጠመቀውም። 
+
+የቀድሞ ኢትዮጵያውያን የጃንደረባውን አሠረ፟ፍኖት ተከትለው ቅድስት ሀገር ኢየሩሳሌምን ለመሳለምና ለአምላካቸው ለመስገድ መንፈሳዊ ጉዞ ያደርጉ ነበር።ጉዞአቸውም በእግር፤በፈረስ፤በጀልባ የሚደረግ ነበር।
+
+ይህም ጉዞ ከአውሬ፤ከሽፍታ ከማዕበልና ሞገድ ጋር የሚደረግ ትንቅንቅ ነበረበት።ነገርግን ኢትዮጵያውያኑ ጠንካራ ኦርቶዶክሳዊ ስብዕናና፤ጥልቅ መንፈሳዊነት ስለነበራቸው ለዚህና ይህን ለመሳሳለው ፈተና የሚሸነፉ አልነበሩም ።
+
+ኢትዮጵያዊው ጃንደረባ ባኮስ ለቀድሙት ኢትዮጵያውያን ትዕግስትን፤ንባብን፤አድማጭነትን፤ ማመንንና;መንፈሳዊ ህይወትንም አንዳስተማራቸው ሁሉ በዚህኛውም ዘመን ትውልድ ሁለንተናዊ ኦርቶዶክሳዊነት አርአያና ምሳሌ መሆኑ ታምኖበታል።`;
+
   return (
     <Layout>
       <About3
-        title="About Us - Ethiopian Janderebaw Generation"
-        description="Ethiopian Janderebaw Generation is a spiritual movement dedicated to empowering young believers through faith, prayer, and fellowship. Our mission is to raise a generation deeply rooted in Orthodox Christian values, spiritual growth, and community impact."
+        title="ስለ እኛ - ኢትዮጵያዊ ጃንደረባው ትውልድ"
+        description={description}
         mainImage={{
-          src: "https://img.youtube.com/vi/9Ac79SHYPIk/hqdefault.jpg",
+          src: "https://img.youtube.com/vi/9Ac79SHYPIk/maxresdefault.jpg",
           alt: "21 Days Spiritual Course",
         }}
         secondaryImage={{
-          src: "https://img.youtube.com/vi/IyXEBB49LXY/hqdefault.jpg",
+          src: "https://img.youtube.com/vi/IyXEBB49LXY/maxresdefault.jpg",
           alt: "Friday Prayer Mahberean Abe Tselot",
         }}
         breakout={{
-          src: "/logo.png",
-          alt: "Ethiopian Janderebaw Generation Logo",
-          title: "A Movement for Faith, Growth, and Unity",
+          videoUrl: "https://www.youtube.com/embed/W4r5Zo8HJwo?autoplay=0&mute=0&loop=1&playlist=W4r5Zo8HJwo&controls=1&showinfo=1&rel=0&modestbranding=1",
+          alt: "Ethiopian Janderebaw Generation Video",
+          title: "የእምነት፣ የእድገት እና የአንድነት እንቅስቃሴ",
           description:
-            "We offer a 21-day spiritual course for newcomers, weekly prayer fellowships, and monthly programs that strengthen believers in their faith journey.",
-          buttonText: "Watch on YouTube",
+            "ለአዲስ ተሳታፊዎች የ21 ቀናት መንፈሳዊ ኮርስ፣ ሳምንታዊ የጸሎት ማህበራት እና አማኞችን በእምነት ጉዞያቸው የሚያጠናክሩ ወርሃዊ ፕሮግራሞችን እናቀርባለን።",
+          buttonText: "በዩቲዩብ ይመልከቱ",
           buttonUrl: "https://www.youtube.com/@EthiopianJanderebawGeneration",
         }}
-        companiesTitle="Supported and Recognized by Faith Communities"
+        companiesTitle="በእምነት ማህበረሰቦች የሚደገፉ እና የሚታወቁ"
         companies={[
           { src: "/partners/church1.svg", alt: "Orthodox Community" },
           { src: "/partners/church2.svg", alt: "Youth Fellowship" },
@@ -33,13 +49,13 @@ const AboutPage = () => {
           { src: "/partners/church5.svg", alt: "Mission Group" },
           { src: "/partners/church6.svg", alt: "Gospel Partners" },
         ]}
-        achievementsTitle="Our Achievements in Numbers"
-        achievementsDescription="Through dedication, prayer, and service, Ethiopian Janderebaw Generation continues to inspire thousands of youth across Ethiopia and beyond."
+        achievementsTitle="በቁጥር የእኛ ስኬቶች"
+        achievementsDescription="በትጋት፣ በጸሎት እና በአገልግሎት፣ ኢትዮጵያዊ ጃንደረባው ትውልድ በመላ ኢትዮጵያ እና ከዚያም በላይ በሺዎች የሚቆጠሩ ወጣቶችን ማነሳሳቱን ይቀጥላል።"
         achievements={[
-          { label: "21-Day Courses Completed", value: "200+" },
-          { label: "Weekly Prayer Meetings", value: "150+" },
-          { label: "Active Members", value: "10,000+" },
-          { label: "Projects Completed", value: "12" },
+          { label: "የተጠናቀቁ የ21 ቀናት ኮርሶች", value: "200+" },
+          { label: "ሳምንታዊ የጸሎት ስብሰባዎች", value: "150+" },
+          { label: "ንቁ አባላት", value: "10,000+" },
+          { label: "የተጠናቀቁ ፕሮጀክቶች", value: "12" },
         ]}
       />
     </Layout>
