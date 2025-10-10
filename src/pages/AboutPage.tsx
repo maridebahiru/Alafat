@@ -32,7 +32,7 @@ const AboutPage = () => {
           alt: "Friday Prayer Mahberean Abe Tselot",
         }}
         breakout={{
-          videoUrl: "https://www.youtube.com/embed/W4r5Zo8HJwo?autoplay=1&mute=0&loop=1&playlist=W4r5Zo8HJwo&controls=1&showinfo=1&rel=0&modestbranding=1",
+          videoUrl: "https://www.youtube.com/embed/W4r5Zo8HJwo?autoplay=1&mute=1&loop=1&playlist=W4r5Zo8HJwo&controls=1&showinfo=1&rel=0&modestbranding=1",
           alt: "Ethiopian Janderebaw Generation Video",
           title: "የእምነት፣ የእድገት እና የአንድነት እንቅስቃሴ",
           description:

@@ -6,6 +6,8 @@ import { getSongs } from '../services/songService';
 import { Song } from '../services/types';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { useLanguage } from '../contexts/LanguageContext';
+import MorphingPageDots from '../components/ui/morphing-page-dots';
+import { PageLoader } from '../components/PageLoader';
 
 const SongsPage = () => {
   const { t } = useLanguage();
@@ -54,15 +56,7 @@ const SongsPage = () => {
   };
 
   if (loading) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-6">
-          <div className="text-center">
-            <p className="text-gray-600">{t('common.loading')}</p>
-          </div>
-        </div>
-      </Layout>
-    );
+    return <PageLoader />;
   }
 
   return (
@@ -111,37 +105,11 @@ const SongsPage = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center space-x-2 flex-wrap">
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 transition-colors text-sm sm:text-base"
-            >
-              {t('common.previous')}
-            </button>
-            
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`px-3 sm:px-4 py-2 rounded-md transition-colors text-sm sm:text-base ${
-                  currentPage === page
-                    ? 'bg-primary text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                {page}
-              </button>
-            ))}
-            
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 transition-colors text-sm sm:text-base"
-            >
-              {t('common.next')}
-            </button>
-          </div>
+          <MorphingPageDots
+            total={totalPages}
+            activeIndex={currentPage - 1}
+            onChange={(index) => setCurrentPage(index + 1)}
+          />
         )}
       </div>
     </Layout>
