@@ -34,28 +34,24 @@ const HomePage = () => {
           <CountdownTimer />
         </section>
 
+        {/* Promotion Carousel - External Ads */}
+        <section>
+          <PromotionCarousel />
+        </section>
+
         {/* Call to Action */}
         <section className="bg-white rounded-lg shadow-md p-6 text-center">
-          <h2 className="text-2xl font-bold text-primary mb-4">{t('home.hero.title')}</h2>
-          <p className="text-gray-600 mb-6">
-            {t('home.hero.description')}
-          </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
               onClick={() => alert('Donation functionality will be available soon')}
               className="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-medium transition-colors"
             >
-              {t('home.hero.donateNow')}
+              Donate Now
             </button>
             <button className="border border-primary text-primary hover:bg-primary hover:text-white px-6 py-3 rounded-lg font-medium transition-colors">
-              {t('home.hero.learnMore')}
+              Donate Later
             </button>
           </div>
-        </section>
-
-        {/* Promotion Carousel - External Ads */}
-        <section>
-          <PromotionCarousel />
         </section>
 
         {/* Contact Us */}

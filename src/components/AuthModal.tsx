@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Mail, Lock, User, Eye, EyeOff, Loader2, Chrome } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import logo from '@/assets/Aelafat_Logo.png';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -105,9 +106,9 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
           <div className="text-center mb-8">
             <div className="mb-6">
               <img 
-                src="/lovable-uploads/c5c1c99b-6655-46d3-8dfa-8100276eb20e.png" 
+                src={logo}
                 alt="Aelafat Logo" 
-                className="w-24 h-24 mx-auto mb-4 drop-shadow-lg"
+                className="w-32 h-32 mx-auto mb-4 drop-shadow-lg"
               />
             </div>
             <h2 className="text-2xl font-bold mb-2 relative group">
@@ -119,6 +120,15 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
             <p className="text-white/80 text-lg font-medium">
               The Ethiopian Janderebaw Generation
             </p>
+          </div>
+
+          {/* Logo Above Email */}
+          <div className="flex justify-center mb-6">
+            <img 
+              src={logo}
+              alt="Aelafat Logo" 
+              className="w-20 h-20 drop-shadow-lg"
+            />
           </div>
 
           {success && (
