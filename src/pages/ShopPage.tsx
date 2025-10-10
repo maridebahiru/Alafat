@@ -13,6 +13,7 @@ import { generateReceiptNumber, downloadReceipt } from '../services/receiptServi
 import { Product } from '../services/types';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { PageLoader } from '../components/PageLoader';
 
 interface CartItem extends Product {
   quantity: number;
@@ -140,6 +141,10 @@ const ShopPage = () => {
       downloadReceipt(lastReceiptData);
     }
   };
+
+  if (loading) {
+    return <PageLoader />;
+  }
 
   return (
     <Layout>

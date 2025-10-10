@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 interface AboutImage {
   src: string;
   alt: string;
+  videoUrl?: string;
 }
 
 interface Breakout {
@@ -58,11 +59,22 @@ export function About3({
           <p className="text-muted-foreground whitespace-pre-line">{description}</p>
         </div>
         <div className="grid gap-7 lg:grid-cols-3">
-          <img
-            src={mainImage.src}
-            alt={mainImage.alt}
-            className="size-full max-h-[620px] rounded-xl object-cover lg:col-span-2"
-          />
+          {mainImage.videoUrl ? (
+            <div className="relative w-full max-h-[620px] rounded-xl overflow-hidden lg:col-span-2">
+              <iframe
+                src={mainImage.videoUrl}
+                className="w-full h-full min-h-[400px] lg:min-h-[620px]"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          ) : (
+            <img
+              src={mainImage.src}
+              alt={mainImage.alt}
+              className="size-full max-h-[620px] rounded-xl object-cover lg:col-span-2"
+            />
+          )}
           <div className="flex flex-col gap-7 md:flex-row lg:flex-col">
             <div className="flex flex-col justify-between gap-6 rounded-xl bg-muted p-7 md:w-1/2 lg:w-auto">
               {breakout.videoUrl ? (
@@ -91,11 +103,22 @@ export function About3({
                 </a>
               </Button>
             </div>
-            <img
-              src={secondaryImage.src}
-              alt={secondaryImage.alt}
-              className="grow basis-0 rounded-xl object-cover md:w-1/2 lg:min-h-0 lg:w-auto"
-            />
+            {secondaryImage.videoUrl ? (
+              <div className="relative w-full rounded-xl overflow-hidden grow md:w-1/2 lg:w-auto">
+                <iframe
+                  src={secondaryImage.videoUrl}
+                  className="w-full h-full min-h-[300px]"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <img
+                src={secondaryImage.src}
+                alt={secondaryImage.alt}
+                className="grow basis-0 rounded-xl object-cover md:w-1/2 lg:min-h-0 lg:w-auto"
+              />
+            )}
           </div>
         </div>
         <div className="py-32">

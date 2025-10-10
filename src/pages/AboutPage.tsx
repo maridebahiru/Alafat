@@ -26,10 +26,12 @@ const AboutPage = () => {
         mainImage={{
           src: "https://img.youtube.com/vi/9Ac79SHYPIk/maxresdefault.jpg",
           alt: "21 Days Spiritual Course",
+          videoUrl: "https://www.youtube.com/embed/9Ac79SHYPIk?autoplay=0&mute=0&controls=1&showinfo=1&rel=0&modestbranding=1",
         }}
         secondaryImage={{
           src: "https://img.youtube.com/vi/IyXEBB49LXY/maxresdefault.jpg",
           alt: "Friday Prayer Mahberean Abe Tselot",
+          videoUrl: "https://www.youtube.com/embed/IyXEBB49LXY?autoplay=0&mute=0&controls=1&showinfo=1&rel=0&modestbranding=1",
         }}
         breakout={{
           videoUrl: "https://www.youtube.com/embed/W4r5Zo8HJwo?autoplay=1&mute=1&loop=1&playlist=W4r5Zo8HJwo&controls=1&showinfo=1&rel=0&modestbranding=1",
