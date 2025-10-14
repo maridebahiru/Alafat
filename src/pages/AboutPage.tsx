@@ -1,7 +1,20 @@
 import Layout from '../components/Layout';
 import { About3 } from '@/components/ui/about-3';
+import { PageLoader } from '../components/PageLoader';
+import { useState, useEffect } from 'react';
 
 const AboutPage = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 300);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <PageLoader />;
+  }
+
   const description = `መግቢያ
 
 ህንደኬ የተባለች የኢትዮጵያ ንግሥት አዛዥና ጃንደረባ የነበረ በገንዘብዋም ሁሉ የሠለጠነ አንድ የኢትዮጵያ ሰው ሊሰግድ ወደ ኢየሩሳሌም መጥቶ ነበር፤ ሲመለስም በሰረገላ ተቀምጦ የነቢዩን የኢሳይያስን መጽሐፍ ያነብ ነበር።መንፈስም ፊልጶስን። ወደዚህ ሰረገላ ቅረብና ተገናኝ አለው።

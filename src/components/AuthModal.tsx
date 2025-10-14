@@ -25,7 +25,9 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const { login, signup, loginWithGoogle } = useAuth();
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const { login, signup, loginWithGoogle, resetPassword } = useAuth();
 
   const resetForm = () => {
     setFormData({
@@ -85,6 +87,29 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
     }
   };
 
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    setLoading(true);
+
+    try {
+      if (!resetEmail) {
+        throw new Error('Please enter your email address');
+      }
+      await resetPassword(resetEmail);
+      setSuccess('Password reset email sent! Check your inbox.');
+      setTimeout(() => {
+        setShowForgotPassword(false);
+        setResetEmail('');
+      }, 3000);
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -117,21 +142,12 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
                 Melody of Myriads
               </span>
             </h2>
-            <p className="text-white/80 text-lg font-medium">
-              The Ethiopian Janderebaw Generation
-            </p>
-          </div>
+          <p className="text-white/80 text-lg font-medium">
+            The Ethiopian Janderebaw Generation
+          </p>
+        </div>
 
-          {/* Logo Above Email */}
-          <div className="flex justify-center mb-6">
-            <img 
-              src={logo}
-              alt="Aelafat Logo" 
-              className="w-20 h-20 drop-shadow-lg"
-            />
-          </div>
-
-          {success && (
+        {success && (
             <div className="mb-4 p-3 bg-green-500/20 border border-green-400/50 text-green-300 rounded-lg backdrop-blur-sm">
               {success}
             </div>
@@ -212,14 +228,52 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
               </div>
             )}
 
-            {mode === 'login' && (
-              <div className="text-center">
+            {mode === 'login' && !showForgotPassword && (
+              <div className="text-right">
                 <button
                   type="button"
+                  onClick={() => setShowForgotPassword(true)}
                   className="text-white/80 text-sm hover:text-white transition-colors disabled:opacity-50"
                   disabled={loading}
                 >
                   {t('auth.forgotPassword')}
+                </button>
+              </div>
+            )}
+
+            {showForgotPassword && (
+              <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-white font-medium">Reset Password</h3>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowForgotPassword(false);
+                      setResetEmail('');
+                      setError('');
+                      setSuccess('');
+                    }}
+                    className="text-white/60 hover:text-white text-sm"
+                  >
+                    Cancel
+                  </button>
+                </div>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-purple-500/50 transition-colors"
+                  />
+                </div>
+                <button
+                  onClick={handlePasswordReset}
+                  disabled={loading || !resetEmail}
+                  className="w-full py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Sending...' : 'Send Reset Link'}
                 </button>
               </div>
             )}

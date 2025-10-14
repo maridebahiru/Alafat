@@ -1,16 +1,27 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { User, QrCode, Globe, LogOut, Trash2, Shield, FileText } from 'lucide-react';
 import Layout from '../components/Layout';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import QRCodeModal from '../components/QRCodeModal';
+import { PageLoader } from '../components/PageLoader';
 
 const ProfilePage = () => {
   const { currentUser, userProfile, logout } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const [showQRModal, setShowQRModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 300);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <PageLoader />;
+  }
 
   const handleLogout = async () => {
     try {

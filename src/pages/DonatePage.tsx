@@ -1,9 +1,10 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { Heart, DollarSign } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { PageLoader } from '../components/PageLoader';
 
 const DonatePage = () => {
   const { currentUser, userProfile } = useAuth();
@@ -13,7 +14,16 @@ const DonatePage = () => {
   const [donorInfo, setDonorInfo] = useState({
     message: ''
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 300);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <PageLoader />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

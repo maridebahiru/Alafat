@@ -6,7 +6,9 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  sendPasswordResetEmail,
+  sendEmailVerification
 } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
 import { getUserProfile, createUserProfile } from '../services/userService';
@@ -19,8 +21,11 @@ interface AuthContextType {
   signup: (email: string, password: string, fullName: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  resendVerificationEmail: () => Promise<void>;
   loading: boolean;
   needsProfileCompletion: boolean;
+  needsEmailVerification: boolean;
   completeProfile: (profileData: Partial<UserProfile>) => Promise<void>;
 }
 
@@ -39,6 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [needsProfileCompletion, setNeedsProfileCompletion] = useState(false);
+  const [needsEmailVerification, setNeedsEmailVerification] = useState(false);
 
   const signup = async (email: string, password: string, fullName: string) => {
     try {
@@ -63,7 +69,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const login = async (email: string, password: string) => {
-    await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    
+    // Force token refresh for security
+    if (userCredential.user) {
+      await userCredential.user.getIdToken(true);
+    }
   };
 
   const loginWithGoogle = async () => {
@@ -90,6 +101,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await signOut(auth);
     setUserProfile(null);
     setNeedsProfileCompletion(false);
+    setNeedsEmailVerification(false);
+  };
+
+  const resetPassword = async (email: string) => {
+    try {
+      await sendPasswordResetEmail(auth, email, {
+        url: window.location.origin,
+        handleCodeInApp: false,
+      });
+    } catch (error) {
+      console.error('Error sending password reset email:', error);
+      throw error;
+    }
+  };
+
+  const resendVerificationEmail = async () => {
+    if (!currentUser) {
+      throw new Error('No user logged in');
+    }
+    
+    try {
+      await sendEmailVerification(currentUser, {
+        url: window.location.origin,
+        handleCodeInApp: false,
+      });
+    } catch (error) {
+      console.error('Error sending verification email:', error);
+      throw error;
+    }
   };
 
   const completeProfile = async (profileData: Partial<UserProfile>) => {
@@ -116,17 +156,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setCurrentUser(user);
       
       if (user) {
+        // Refresh token on auth state change for security
+        await user.getIdToken(true);
+        
         // Get user profile
         const profile = await getUserProfile(user.uid);
         setUserProfile(profile);
         
+        // Check email verification status
+        if (!user.emailVerified) {
+          setNeedsEmailVerification(true);
+        } else {
+          setNeedsEmailVerification(false);
+        }
+        
         // Check if profile needs completion
         if (profile && !profile.profileCompleted) {
           setNeedsProfileCompletion(true);
+        } else {
+          setNeedsProfileCompletion(false);
         }
       } else {
         setUserProfile(null);
         setNeedsProfileCompletion(false);
+        setNeedsEmailVerification(false);
       }
       
       setLoading(false);
@@ -142,8 +195,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signup,
     loginWithGoogle,
     logout,
+    resetPassword,
+    resendVerificationEmail,
     loading,
     needsProfileCompletion,
+    needsEmailVerification,
     completeProfile
   };
 
