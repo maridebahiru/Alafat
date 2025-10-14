@@ -106,13 +106,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const resetPassword = async (email: string) => {
     try {
-      await sendPasswordResetEmail(auth, email, {
-        url: window.location.origin,
+      // Use the correct action URL for password reset
+      const actionCodeSettings = {
+        url: `${window.location.origin}/`,
         handleCodeInApp: false,
-      });
-    } catch (error) {
+      };
+      
+      await sendPasswordResetEmail(auth, email, actionCodeSettings);
+    } catch (error: any) {
       console.error('Error sending password reset email:', error);
-      throw error;
+      // Provide more specific error messages
+      if (error.code === 'auth/user-not-found') {
+        throw new Error('No account found with this email address');
+      } else if (error.code === 'auth/invalid-email') {
+        throw new Error('Invalid email address');
+      } else if (error.code === 'auth/too-many-requests') {
+        throw new Error('Too many requests. Please try again later');
+      }
+      throw new Error('Failed to send password reset email. Please try again');
     }
   };
 

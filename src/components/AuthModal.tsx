@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Mail, Lock, User, Eye, EyeOff, Loader2, Chrome } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, Loader2, Chrome, QrCode } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import logo from '@/assets/Aelafat_Logo.png';
+import QRScanner from './QRScanner';
+import { getUserProfile } from '../services/userService';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -27,6 +29,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
+  const [showQRScanner, setShowQRScanner] = useState(false);
   const { login, signup, loginWithGoogle, resetPassword } = useAuth();
 
   const resetForm = () => {
@@ -105,6 +108,43 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
       }, 3000);
     } catch (error: any) {
       setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQRScan = async (qrData: string) => {
+    setError('');
+    setLoading(true);
+
+    try {
+      const data = JSON.parse(qrData);
+      
+      // QR codes should contain uid for authentication
+      if (!data.uid) {
+        throw new Error('Invalid QR code');
+      }
+
+      // Verify this user exists in the database
+      const profile = await getUserProfile(data.uid);
+      
+      if (!profile) {
+        throw new Error('User not found. Please sign up first.');
+      }
+
+      // If user exists but hasn't completed profile, redirect to profile completion
+      if (!profile.profileCompleted) {
+        setError('Please complete your profile first');
+        return;
+      }
+
+      // Auto-login using email from QR code (this is a simplified approach)
+      // In production, you'd want a more secure token-based authentication
+      setSuccess('QR code scanned! Please log in with your credentials.');
+      setFormData({ ...formData, email: profile.email });
+      
+    } catch (error: any) {
+      setError(error.message || 'Invalid QR code');
     } finally {
       setLoading(false);
     }
@@ -304,7 +344,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
               </div>
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex justify-center gap-4">
               <button
                 onClick={handleGoogleSignIn}
                 disabled={loading || googleLoading}
@@ -316,6 +356,16 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
                   <Chrome size={18} />
                 )}
               </button>
+
+              {mode === 'login' && (
+                <button
+                  onClick={() => setShowQRScanner(true)}
+                  disabled={loading || googleLoading}
+                  className="flex items-center justify-center p-2 bg-white/5 border border-white/10 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <QrCode size={18} />
+                </button>
+              )}
             </div>
 
             <div className="text-center mt-6">
@@ -336,6 +386,13 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
           </div>
         </div>
       </div>
+
+      {/* QR Scanner Modal */}
+      <QRScanner
+        isOpen={showQRScanner}
+        onClose={() => setShowQRScanner(false)}
+        onScan={handleQRScan}
+      />
     </div>
   );
 };
