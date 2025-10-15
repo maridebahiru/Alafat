@@ -44,7 +44,7 @@ const PromotionCarousel = () => {
 
   if (loading) {
     return (
-      <div className="relative overflow-hidden bg-gray-200 rounded-lg shadow-md h-20 sm:h-24 md:h-28 lg:h-32 xl:h-36 animate-pulse flex items-center justify-center">
+      <div className="relative overflow-hidden bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg shadow-md h-20 sm:h-24 md:h-28 lg:h-32 xl:h-36 animate-pulse flex items-center justify-center">
         <span className="text-gray-500 text-sm sm:text-base">Loading promotions...</span>
       </div>
     );
@@ -55,7 +55,7 @@ const PromotionCarousel = () => {
   }
 
   return (
-    <div className="relative overflow-hidden bg-white rounded-lg shadow-md h-20 sm:h-24 md:h-28 lg:h-32 xl:h-36">
+    <div className="relative overflow-hidden bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg shadow-md h-20 sm:h-24 md:h-28 lg:h-32 xl:h-36">
       <div 
         className="flex transition-transform duration-500 ease-in-out h-full"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -63,12 +63,18 @@ const PromotionCarousel = () => {
         {adverts.map((advert) => (
           <div
             key={advert.id}
-            className="min-w-full h-full flex items-center justify-center cursor-pointer relative bg-cover bg-center bg-no-repeat"
+            className="min-w-full h-full flex items-center justify-center cursor-pointer relative"
             onClick={() => handleAdvertClick(advert)}
-            style={{
-              backgroundImage: `url(${advert.image})`,
-            }}
           >
+            <img 
+              src={advert.image} 
+              alt="Promotion"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement!.style.backgroundColor = '#f3f4f6';
+              }}
+            />
             {advert.link && (
               <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all" />
             )}

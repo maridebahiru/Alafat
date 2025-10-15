@@ -26,7 +26,7 @@ const HomePage = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-6 space-y-8">
+      <div className="container mx-auto px-4 py-4 space-y-6">
         {/* Hero Section with Ad Carousel */}
         <section>
           <AdCarousel />

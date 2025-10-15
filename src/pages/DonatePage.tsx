@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
-import { Heart, DollarSign } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { PageLoader } from '../components/PageLoader';
@@ -10,7 +10,6 @@ const DonatePage = () => {
   const { currentUser, userProfile } = useAuth();
   const { t } = useLanguage();
   const [donationAmount, setDonationAmount] = useState<number | string>('');
-  const [donationType, setDonationType] = useState<'one-time' | 'monthly'>('one-time');
   const [donorInfo, setDonorInfo] = useState({
     message: ''
   });
@@ -70,50 +69,23 @@ const DonatePage = () => {
           {/* Donation Form */}
           <div className="bg-white rounded-lg shadow-lg p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Donation Type */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">{t('donate.donationType')}</label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setDonationType('one-time')}
-                    className={`p-3 rounded-lg border-2 transition-colors ${
-                      donationType === 'one-time'
-                        ? 'border-primary bg-primary text-white'
-                        : 'border-gray-300 text-gray-700 hover:border-primary'
-                    }`}
-                  >
-                    {t('donate.oneTime')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDonationType('monthly')}
-                    className={`p-3 rounded-lg border-2 transition-colors ${
-                      donationType === 'monthly'
-                        ? 'border-primary bg-primary text-white'
-                        : 'border-gray-300 text-gray-700 hover:border-primary'
-                    }`}
-                  >
-                    {t('donate.monthly')}
-                  </button>
-                </div>
-              </div>
-
               {/* Amount Selection */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">
-                  {t('donate.amount')}
+                  {t('donate.amount')} (Birr)
                 </label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-semibold">
+                    Birr
+                  </span>
                   <input
                     type="number"
-                    placeholder={t('donate.amountPlaceholder')}
+                    placeholder="Enter amount in Birr"
                     value={donationAmount}
                     onChange={(e) => setDonationAmount(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full pl-16 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     min="1"
-                    step="0.01"
+                    step="1"
                     required
                   />
                 </div>

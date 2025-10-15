@@ -22,7 +22,7 @@ const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
       try {
         // Only fetch products for user's location or 'both'
         const fetchedProducts = await getProducts(userProfile?.location);
-        setProducts(fetchedProducts.slice(0, 5));
+        setProducts(fetchedProducts.slice(0, 3));
       } catch (error) {
         console.error('Error fetching products:', error);
         setProducts([]);
@@ -80,37 +80,35 @@ const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
         </button>
       </div>
       
-      <div className="overflow-x-auto pb-4">
-        <div className="flex space-x-4 w-max">
-          {products.map((product) => (
-            <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow w-64 flex-shrink-0">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-32 object-cover"
-              />
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-semibold text-gray-900 truncate flex-1">{product.name}</h4>
-                  <div className="flex items-center text-xs text-gray-500 ml-2">
-                    <MapPin size={12} className="mr-1" />
-                    <span>{getLocationDisplay(product.location)}</span>
-                  </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {products.map((product) => (
+          <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-gray-900 truncate flex-1">{product.name}</h4>
+                <div className="flex items-center text-xs text-gray-500 ml-2">
+                  <MapPin size={12} className="mr-1" />
+                  <span>{getLocationDisplay(product.location)}</span>
                 </div>
-                <p className="text-secondary-dark font-bold text-lg mb-3">
-                  {product.price} Ethiopian Birr
-                </p>
-                <button
-                  onClick={() => handleAddToCart(product)}
-                  className="w-full bg-primary hover:bg-primary/90 text-white py-2 px-3 rounded-md flex items-center justify-center space-x-2 transition-colors text-sm"
-                >
-                  <ShoppingCart size={16} />
-                  <span>{t('common.addToCart')}</span>
-                </button>
               </div>
+              <p className="text-secondary-dark font-bold text-lg mb-3">
+                {product.price} Ethiopian Birr
+              </p>
+              <button
+                onClick={() => handleAddToCart(product)}
+                className="w-full bg-primary hover:bg-primary/90 text-white py-2 px-3 rounded-md flex items-center justify-center space-x-2 transition-colors text-sm"
+              >
+                <ShoppingCart size={16} />
+                <span>{t('common.addToCart')}</span>
+              </button>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   );

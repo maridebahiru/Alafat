@@ -287,57 +287,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
             </button>
           </form>
 
-          {/* Forgot Password Section */}
-          {mode === 'login' && (
-            <div className="mt-6">
-              {!showForgotPassword ? (
-                <button
-                  type="button"
-                  onClick={() => setShowForgotPassword(true)}
-                  className="w-full text-white/80 text-sm hover:text-white transition-colors"
-                >
-                  {t('auth.forgotPassword')}
-                </button>
-              ) : (
-                <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-4">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-white font-medium">Reset Password</h3>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowForgotPassword(false);
-                        setResetEmail('');
-                        setError('');
-                        setSuccess('');
-                      }}
-                      className="text-white/60 hover:text-white text-sm"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
-                    <input
-                      type="email"
-                      placeholder="Enter your email"
-                      value={resetEmail}
-                      onChange={(e) => setResetEmail(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-purple-500/50 transition-colors"
-                    />
-                  </div>
-                  <button
-                    onClick={handlePasswordReset}
-                    disabled={loading || !resetEmail}
-                    className="w-full py-2 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loading ? 'Sending...' : 'Send Reset Link'}
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-
-          <div className="mt-8">
+          <div className="mt-6">
             <div className="relative flex items-center justify-center mb-6">
               <div className="border-t border-white/10 absolute w-full"></div>
               <div className="bg-transparent px-4 relative text-white/60 text-sm">
@@ -385,6 +335,58 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
                 {mode === 'login' ? t('auth.signup') : t('auth.signIn')}
               </button>
             </div>
+
+            {/* Forgot Password - Standalone Section */}
+            {mode === 'login' && (
+              <div className="text-center mt-4">
+                {!showForgotPassword ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotPassword(true)}
+                    className="text-white/80 text-sm hover:text-white underline transition-colors"
+                  >
+                    {t('auth.forgotPassword')}
+                  </button>
+                ) : (
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-6 space-y-4 mt-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-white font-medium text-lg">Reset Password</h3>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowForgotPassword(false);
+                          setResetEmail('');
+                          setError('');
+                          setSuccess('');
+                        }}
+                        className="text-white/60 hover:text-white text-sm"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                    <p className="text-white/60 text-sm">Enter your email to receive a password reset link</p>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
+                      <input
+                        type="email"
+                        placeholder="Enter your email"
+                        value={resetEmail}
+                        onChange={(e) => setResetEmail(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-purple-500/50 transition-colors"
+                      />
+                    </div>
+                    <button
+                      onClick={handlePasswordReset}
+                      disabled={loading || !resetEmail}
+                      className="w-full py-3 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                    >
+                      {loading && <Loader2 className="w-5 h-5 animate-spin" />}
+                      <span>{loading ? 'Sending...' : 'Send Reset Link'}</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
