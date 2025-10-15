@@ -26,15 +26,33 @@ const QRScanner = ({ isOpen, onClose, onScan }: QRScannerProps) => {
   const startScanning = async () => {
     try {
       setError('');
+      
+      // Check if already scanning
+      if (isScanning.current) {
+        return;
+      }
+
       const scanner = new Html5Qrcode("qr-reader");
       scannerRef.current = scanner;
+      
+      // Get available cameras
+      const devices = await Html5Qrcode.getCameras();
+      if (devices && devices.length === 0) {
+        setError('No cameras found on this device.');
+        return;
+      }
+
       isScanning.current = true;
 
+      // Use the back camera if available
+      const cameraId = devices.length > 1 ? devices[1].id : devices[0].id;
+
       await scanner.start(
-        { facingMode: "environment" },
+        cameraId,
         {
           fps: 10,
-          qrbox: { width: 250, height: 250 }
+          qrbox: { width: 250, height: 250 },
+          aspectRatio: 1.0
         },
         (decodedText) => {
           onScan(decodedText);
@@ -46,7 +64,7 @@ const QRScanner = ({ isOpen, onClose, onScan }: QRScannerProps) => {
         }
       );
     } catch (err: any) {
-      setError('Failed to access camera. Please ensure camera permissions are granted.');
+      setError('Failed to access camera. Please ensure camera permissions are granted and try again.');
       console.error('QR Scanner error:', err);
       isScanning.current = false;
     }

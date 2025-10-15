@@ -268,55 +268,6 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
               </div>
             )}
 
-            {mode === 'login' && !showForgotPassword && (
-              <div className="text-right">
-                <button
-                  type="button"
-                  onClick={() => setShowForgotPassword(true)}
-                  className="text-white/80 text-sm hover:text-white transition-colors disabled:opacity-50"
-                  disabled={loading}
-                >
-                  {t('auth.forgotPassword')}
-                </button>
-              </div>
-            )}
-
-            {showForgotPassword && (
-              <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-white font-medium">Reset Password</h3>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowForgotPassword(false);
-                      setResetEmail('');
-                      setError('');
-                      setSuccess('');
-                    }}
-                    className="text-white/60 hover:text-white text-sm"
-                  >
-                    Cancel
-                  </button>
-                </div>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    value={resetEmail}
-                    onChange={(e) => setResetEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-purple-500/50 transition-colors"
-                  />
-                </div>
-                <button
-                  onClick={handlePasswordReset}
-                  disabled={loading || !resetEmail}
-                  className="w-full py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? 'Sending...' : 'Send Reset Link'}
-                </button>
-              </div>
-            )}
 
             {error && (
               <div className="text-red-300 text-sm bg-red-500/20 p-3 rounded-lg border border-red-400/50 backdrop-blur-sm">
@@ -327,7 +278,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
             <button
               type="submit"
               disabled={loading || googleLoading}
-              className="w-full py-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-medium transition-all duration-200 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 flex items-center justify-center space-x-2"
+              className="w-full py-3 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-all duration-200 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none shadow-lg flex items-center justify-center space-x-2"
             >
               {loading && <Loader2 className="w-5 h-5 animate-spin" />}
               <span>
@@ -335,6 +286,56 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
               </span>
             </button>
           </form>
+
+          {/* Forgot Password Section */}
+          {mode === 'login' && (
+            <div className="mt-6">
+              {!showForgotPassword ? (
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="w-full text-white/80 text-sm hover:text-white transition-colors"
+                >
+                  {t('auth.forgotPassword')}
+                </button>
+              ) : (
+                <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-white font-medium">Reset Password</h3>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowForgotPassword(false);
+                        setResetEmail('');
+                        setError('');
+                        setSuccess('');
+                      }}
+                      className="text-white/60 hover:text-white text-sm"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
+                    <input
+                      type="email"
+                      placeholder="Enter your email"
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-purple-500/50 transition-colors"
+                    />
+                  </div>
+                  <button
+                    onClick={handlePasswordReset}
+                    disabled={loading || !resetEmail}
+                    className="w-full py-2 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? 'Sending...' : 'Send Reset Link'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="mt-8">
             <div className="relative flex items-center justify-center mb-6">
@@ -361,6 +362,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
                 <button
                   onClick={() => setShowQRScanner(true)}
                   disabled={loading || googleLoading}
+                  title="Scan QR Code to Login"
                   className="flex items-center justify-center p-2 bg-white/5 border border-white/10 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <QrCode size={18} />

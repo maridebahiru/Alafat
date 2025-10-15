@@ -3,7 +3,6 @@ import { ReactNode } from 'react';
 import Header from './Header';
 import BottomNavigation from './BottomNavigation';
 import Footer from './Footer';
-import EmailVerificationBanner from './EmailVerificationBanner';
 
 interface LayoutProps {
   children: ReactNode;
@@ -13,7 +12,6 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      <EmailVerificationBanner />
       <main className="flex-1 pb-16 md:pb-0">
         {children}
       </main>

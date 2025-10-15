@@ -18,11 +18,14 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				sans: ['Addis Abeba', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+			},
 			colors: {
 				// Alafat custom colors
 				primary: {
 					DEFAULT: '#3c1012',
-					foreground: '#ffffff'
+					foreground: '#b37e10'
 				},
 				secondary: {
 					DEFAULT: '#f8dd7b',

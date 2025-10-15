@@ -51,7 +51,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       
-      // Create initial user profile without email verification
+      // Send email verification
+      await sendEmailVerification(user, {
+        url: window.location.origin,
+        handleCodeInApp: false,
+      });
+      
+      // Create initial user profile
       await createUserProfile({
         uid: user.uid,
         fullName,
@@ -59,7 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         phoneNumber: '',
         location: 'AA',
         baptizedName: '',
-        emailVerified: true, // Set to true since we're removing email verification
+        emailVerified: false,
         profileCompleted: false
       });
     } catch (error) {
@@ -70,6 +76,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    
+    // Check email verification
+    if (!userCredential.user.emailVerified) {
+      await signOut(auth);
+      throw new Error('Please verify your email before logging in. Check your inbox for the verification link.');
+    }
     
     // Force token refresh for security
     if (userCredential.user) {
