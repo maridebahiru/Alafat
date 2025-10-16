@@ -8,11 +8,7 @@ import {
   signOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
-  sendEmailVerification,
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-  PhoneAuthProvider,
-  linkWithCredential
+  sendEmailVerification
 } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
 import { getUserProfile, createUserProfile } from '../services/userService';
@@ -27,12 +23,11 @@ interface AuthContextType {
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   resendVerificationEmail: () => Promise<void>;
-  sendPhoneVerification: (phoneNumber: string) => Promise<void>;
-  verifyPhoneCode: (code: string) => Promise<void>;
+  sendEmailVerificationCode: (email: string) => Promise<void>;
+  verifyEmailCode: (email: string, code: string) => Promise<boolean>;
   loading: boolean;
   needsProfileCompletion: boolean;
   needsEmailVerification: boolean;
-  needs2FA: boolean;
   completeProfile: (profileData: Partial<UserProfile>) => Promise<void>;
 }
 
@@ -52,8 +47,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [needsProfileCompletion, setNeedsProfileCompletion] = useState(false);
   const [needsEmailVerification, setNeedsEmailVerification] = useState(false);
-  const [needs2FA, setNeeds2FA] = useState(false);
-  const [verificationId, setVerificationId] = useState<string>('');
 
   // Helper function to format Firebase errors into friendly messages
   const formatAuthError = (error: any): string => {
@@ -182,44 +175,66 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const sendPhoneVerification = async (phoneNumber: string) => {
+  const sendEmailVerificationCode = async (email: string) => {
     try {
-      if (!currentUser) {
-        throw new Error('Please log in first before adding 2FA');
-      }
-
-      // Initialize reCAPTCHA
-      const recaptchaContainer = document.getElementById('recaptcha-container');
-      if (!recaptchaContainer) {
-        throw new Error('reCAPTCHA container not found');
-      }
-
-      const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible',
-        callback: () => {
-          // reCAPTCHA solved
-        }
+      // Generate a 6-digit code
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // Store in Firestore with expiration (10 minutes)
+      const { doc, setDoc } = await import('firebase/firestore');
+      const { db } = await import('../lib/firebase');
+      
+      const expiresAt = new Date();
+      expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+      
+      await setDoc(doc(db, 'verification_codes', email), {
+        code,
+        email,
+        expiresAt: expiresAt.toISOString(),
+        createdAt: new Date().toISOString()
       });
 
-      const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-      setVerificationId(confirmationResult.verificationId);
-      setNeeds2FA(true);
+      // In a production app, you would send this code via email using an edge function
+      // For now, we'll log it (in production, remove this and implement email sending)
+      console.log('Verification code for', email, ':', code);
+      
+      // For demo purposes, show the code in an alert (remove in production)
+      alert(`Your verification code is: ${code}\n\nIn production, this would be sent to your email.`);
     } catch (error) {
       throw new Error(formatAuthError(error));
     }
   };
 
-  const verifyPhoneCode = async (code: string) => {
+  const verifyEmailCode = async (email: string, code: string): Promise<boolean> => {
     try {
-      if (!currentUser || !verificationId) {
-        throw new Error('Verification session expired. Please try again.');
-      }
-
-      const credential = PhoneAuthProvider.credential(verificationId, code);
-      await linkWithCredential(currentUser, credential);
+      const { doc, getDoc, deleteDoc } = await import('firebase/firestore');
+      const { db } = await import('../lib/firebase');
       
-      setNeeds2FA(false);
-      setVerificationId('');
+      const docRef = doc(db, 'verification_codes', email);
+      const docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        throw new Error('Verification code not found or expired');
+      }
+      
+      const data = docSnap.data();
+      const expiresAt = new Date(data.expiresAt);
+      
+      // Check if expired
+      if (new Date() > expiresAt) {
+        await deleteDoc(docRef);
+        throw new Error('Verification code has expired');
+      }
+      
+      // Check if code matches
+      if (data.code !== code) {
+        throw new Error('Invalid verification code');
+      }
+      
+      // Delete the code after successful verification
+      await deleteDoc(docRef);
+      
+      return true;
     } catch (error) {
       throw new Error(formatAuthError(error));
     }
@@ -306,12 +321,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logout,
     resetPassword,
     resendVerificationEmail,
-    sendPhoneVerification,
-    verifyPhoneCode,
+    sendEmailVerificationCode,
+    verifyEmailCode,
     loading,
     needsProfileCompletion,
     needsEmailVerification,
-    needs2FA,
     completeProfile
   };
 
