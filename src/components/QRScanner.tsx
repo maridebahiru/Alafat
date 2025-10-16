@@ -32,6 +32,14 @@ const QRScanner = ({ isOpen, onClose, onScan }: QRScannerProps) => {
         return;
       }
 
+      // Check for camera permissions first
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: true });
+      } catch (permError) {
+        setError('Camera permission denied. Please allow camera access in your browser settings.');
+        return;
+      }
+
       const scanner = new Html5Qrcode("qr-reader");
       scannerRef.current = scanner;
       
@@ -44,28 +52,45 @@ const QRScanner = ({ isOpen, onClose, onScan }: QRScannerProps) => {
 
       isScanning.current = true;
 
-      // Use the back camera if available
-      const cameraId = devices.length > 1 ? devices[1].id : devices[0].id;
+      // Prefer back camera (environment facing)
+      const backCamera = devices.find(device => 
+        device.label.toLowerCase().includes('back') || 
+        device.label.toLowerCase().includes('environment')
+      );
+      const cameraId = backCamera ? backCamera.id : devices[0].id;
 
       await scanner.start(
         cameraId,
         {
           fps: 10,
           qrbox: { width: 250, height: 250 },
-          aspectRatio: 1.0
+          aspectRatio: 1.0,
+          disableFlip: false
         },
         (decodedText) => {
+          // Successfully scanned
           onScan(decodedText);
           stopScanning();
           onClose();
         },
         (errorMessage) => {
-          // Ignore scanning errors, they're too frequent
+          // Ignore continuous scanning errors - they're normal
         }
       );
     } catch (err: any) {
-      setError('Failed to access camera. Please ensure camera permissions are granted and try again.');
-      console.error('QR Scanner error:', err);
+      let errorMsg = 'Failed to start camera. ';
+      
+      if (err.name === 'NotAllowedError') {
+        errorMsg = 'Camera access denied. Please allow camera permissions in your browser.';
+      } else if (err.name === 'NotFoundError') {
+        errorMsg = 'No camera found on this device.';
+      } else if (err.name === 'NotReadableError') {
+        errorMsg = 'Camera is already in use by another application.';
+      } else {
+        errorMsg += 'Please check your camera and permissions.';
+      }
+      
+      setError(errorMsg);
       isScanning.current = false;
     }
   };
@@ -111,11 +136,16 @@ const QRScanner = ({ isOpen, onClose, onScan }: QRScannerProps) => {
             </div>
           )}
           
-          <div id="qr-reader" className="w-full rounded-lg overflow-hidden"></div>
+          <div id="qr-reader" className="w-full rounded-lg overflow-hidden bg-gray-100 min-h-[300px]"></div>
           
-          <p className="text-sm text-gray-600 mt-4 text-center">
-            Position the QR code within the frame to scan
-          </p>
+          <div className="mt-4 space-y-2">
+            <p className="text-sm text-gray-600 text-center font-medium">
+              Position the QR code within the frame to scan
+            </p>
+            <p className="text-xs text-gray-500 text-center">
+              Make sure the QR code is well-lit and centered
+            </p>
+          </div>
         </div>
       </div>
     </div>

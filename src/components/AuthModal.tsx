@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Mail, Lock, User, Eye, EyeOff, Loader2, Chrome, QrCode } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, Loader2, Chrome, QrCode, Shield } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import logo from '@/assets/Aelafat_Logo.png';
 import QRScanner from './QRScanner';
+import TwoFactorModal from './TwoFactorModal';
 import { getUserProfile } from '../services/userService';
+import { toast } from 'sonner';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -30,6 +32,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [showQRScanner, setShowQRScanner] = useState(false);
+  const [show2FAModal, setShow2FAModal] = useState(false);
   const { login, signup, loginWithGoogle, resetPassword } = useAuth();
 
   const resetForm = () => {
@@ -68,6 +71,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
         onClose();
       } else {
         await login(formData.email, formData.password);
+        toast.success('Logged in successfully!');
         onClose();
       }
     } catch (error: any) {
@@ -82,6 +86,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
     setGoogleLoading(true);
     try {
       await loginWithGoogle();
+      toast.success('Logged in successfully!');
       onClose();
     } catch (error: any) {
       setError(error.message);
@@ -299,6 +304,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
               <button
                 onClick={handleGoogleSignIn}
                 disabled={loading || googleLoading}
+                title="Sign in with Google"
                 className="flex items-center justify-center p-2 bg-white/5 border border-white/10 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {googleLoading ? (
@@ -309,14 +315,25 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
               </button>
 
               {mode === 'login' && (
-                <button
-                  onClick={() => setShowQRScanner(true)}
-                  disabled={loading || googleLoading}
-                  title="Scan QR Code to Login"
-                  className="flex items-center justify-center p-2 bg-white/5 border border-white/10 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <QrCode size={18} />
-                </button>
+                <>
+                  <button
+                    onClick={() => setShowQRScanner(true)}
+                    disabled={loading || googleLoading}
+                    title="Scan QR Code to Login"
+                    className="flex items-center justify-center p-2 bg-white/5 border border-white/10 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <QrCode size={18} />
+                  </button>
+                  
+                  <button
+                    onClick={() => setShow2FAModal(true)}
+                    disabled={loading || googleLoading}
+                    title="Enable Two-Factor Authentication"
+                    className="flex items-center justify-center p-2 bg-white/5 border border-white/10 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Shield size={18} />
+                  </button>
+                </>
               )}
             </div>
 
@@ -396,6 +413,13 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
         isOpen={showQRScanner}
         onClose={() => setShowQRScanner(false)}
         onScan={handleQRScan}
+      />
+
+      {/* Two-Factor Authentication Modal */}
+      <TwoFactorModal
+        isOpen={show2FAModal}
+        onClose={() => setShow2FAModal(false)}
+        onSuccess={() => toast.success('Two-factor authentication enabled successfully!')}
       />
     </div>
   );
