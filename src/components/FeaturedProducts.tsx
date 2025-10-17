@@ -80,9 +80,9 @@ const FeaturedProducts = ({ onAddToCart }: FeaturedProductsProps) => {
         </button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex overflow-x-auto gap-4 pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible scrollbar-hide snap-x snap-mandatory">
         {products.map((product) => (
-          <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+          <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex-shrink-0 w-[280px] md:w-auto snap-start">
             <img
               src={product.image}
               alt={product.name}

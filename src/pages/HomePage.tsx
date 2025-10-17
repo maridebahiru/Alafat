@@ -6,6 +6,7 @@ import FeaturedProducts from '../components/FeaturedProducts';
 import CountdownTimer from '../components/CountdownTimer';
 import ContactUs from '../components/ContactUs';
 import PromotionCarousel from '../components/PromotionCarousel';
+import AIAssistant from '../components/AIAssistant';
 import { PageLoader } from '../components/PageLoader';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useState, useEffect } from 'react';
@@ -70,6 +71,9 @@ const HomePage = () => {
         {/* Contact Us */}
         <ContactUs />
       </div>
+      
+      {/* AI Assistant */}
+      <AIAssistant />
     </Layout>
   );
 };

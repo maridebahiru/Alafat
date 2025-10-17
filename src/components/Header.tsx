@@ -37,7 +37,7 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <img 
-              src="/lovable-uploads/aab69517-55fa-435c-bf9a-110721c35cf2.png" 
+              src="/img/aab69517-55fa-435c-bf9a-110721c35cf2.png" 
               alt="Logo" 
               className="w-10 h-10 object-contain"
             />

@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
-import { Heart } from 'lucide-react';
+
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { PageLoader } from '../components/PageLoader';
@@ -16,7 +16,7 @@ const DonatePage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 300);
+    const timer = setTimeout(() => setLoading(false), 3000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -59,8 +59,8 @@ const DonatePage = () => {
       <div className="container mx-auto px-4 py-6">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-primary to-secondary-dark rounded-full flex items-center justify-center mx-auto mb-4">
-            <Heart className="w-8 h-8 text-white" />
+          <div className="w-24 h-24 flex items-center justify-center mx-auto mb-4">
+            <img src="/img/Aelafat_Logo_dark.png" alt="Aelafat Logo" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-3xl font-bold text-primary mb-4">{t('donate.title')}</h1>
         </div>

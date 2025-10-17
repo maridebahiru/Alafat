@@ -71,7 +71,7 @@ const SongsPage = () => {
         <div className="mb-6">
           <div className="relative">
             <img 
-              src="/lovable-uploads/c5c1c99b-6655-46d3-8dfa-8100276eb20e.png" 
+              src="/img/c5c1c99b-6655-46d3-8dfa-8100276eb20e.png" 
               alt="Alafat Logo" 
               className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 object-contain"
             />

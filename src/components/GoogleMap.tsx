@@ -56,7 +56,7 @@ const GoogleMap = () => {
         map: mapInstanceRef.current,
         title: 'Addis Ababa',
         icon: {
-          url: '/lovable-uploads/aab69517-55fa-435c-bf9a-110721c35cf2.png',
+          url: '/img/aab69517-55fa-435c-bf9a-110721c35cf2.png',
           scaledSize: new window.google.maps.Size(30, 30)
         }
       });
@@ -66,7 +66,7 @@ const GoogleMap = () => {
         map: mapInstanceRef.current,
         title: 'Dire Dawa',
         icon: {
-          url: '/lovable-uploads/aab69517-55fa-435c-bf9a-110721c35cf2.png',
+          url: '/img/aab69517-55fa-435c-bf9a-110721c35cf2.png',
           scaledSize: new window.google.maps.Size(30, 30)
         }
       });
