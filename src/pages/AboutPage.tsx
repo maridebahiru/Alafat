@@ -67,9 +67,9 @@ const AboutPage = () => {
         achievementsTitle="በቁጥር የእኛ ስኬቶች"
         achievementsDescription="በትጋት፣ በጸሎት እና በአገልግሎት፣ ኢትዮጵያዊ ጃንደረባው ትውልድ በመላ ኢትዮጵያ እና ከዚያም በላይ በሺዎች የሚቆጠሩ ወጣቶችን ማነሳሳቱን ይቀጥላል።"
         achievements={[
-          { label: "የተጠናቀቁ የ21 ቀናት ኮርሶች", value: "200+" },
-          { label: "ሳምንታዊ የጸሎት ስብሰባዎች", value: "150+" },
-          { label: "ንቁ አባላት", value: "10,000+" },
+          { label: "የተጠናቀቁ የ21 ቀናት ኮርሶች", value: "23+" },
+          { label: "ሳምንታዊ የጸሎት ስብሰባዎች", value: "1+" },
+          { label: "ንቁ አባላት", value: "1,000+" },
           { label: "የተጠናቀቁ ፕሮጀክቶች", value: "12" },
         ]}
       />
